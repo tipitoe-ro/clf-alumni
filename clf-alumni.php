@@ -3,7 +3,7 @@
  * Plugin Name:       CLF Alumni Network
  * Plugin URI:        https://app.global
  * Description:       Private alumni network for the Charlotte Leadership Forum — member profiles, searchable directory, and admin member management. Bold Conviction design.
- * Version:           1.3.1
+ * Version:           1.4.0
  * Author:            Always About People
  * License:           GPL-2.0-or-later
  * Text Domain:       clf-alumni
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CLFA_VERSION', '1.3.1' );
+define( 'CLFA_VERSION', '1.4.0' );
 define( 'CLFA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CLFA_URL', plugin_dir_url( __FILE__ ) );
 
@@ -28,6 +28,7 @@ require_once CLFA_DIR . 'includes/rsvp.php';
 require_once CLFA_DIR . 'includes/invites.php';
 require_once CLFA_DIR . 'includes/mentorship.php';
 require_once CLFA_DIR . 'includes/opportunities.php';
+require_once CLFA_DIR . 'includes/home.php';
 
 /* ============================================================
    Activation: role + members-area pages
@@ -38,6 +39,7 @@ function clfa_activate() {
 
 	$pages = array(
 		'alumni-login'   => array( 'title' => 'Alumni Login',   'content' => '[clf_alumni_login]' ),
+		'alumni-home'    => array( 'title' => 'Alumni Home',    'content' => '[clf_alumni_home]' ),
 		'alumni'         => array( 'title' => 'Alumni Network', 'content' => '[clf_alumni_directory]' ),
 		'alumni-profile' => array( 'title' => 'My Profile',     'content' => '[clf_alumni_profile]' ),
 		'alumni-events'  => array( 'title' => 'Alumni Events',  'content' => '[clf_alumni_events]' ),
@@ -85,7 +87,7 @@ add_action( 'admin_init', 'clfa_maybe_upgrade' );
    Front-end assets (only when a members-area page renders)
    ============================================================ */
 function clfa_enqueue_assets() {
-	if ( ! is_page( array( 'alumni', 'alumni-profile', 'alumni-login', 'alumni-events', 'alumni-mentors', 'alumni-board' ) ) ) {
+	if ( ! is_page( array( 'alumni', 'alumni-home', 'alumni-profile', 'alumni-login', 'alumni-events', 'alumni-mentors', 'alumni-board' ) ) ) {
 		return;
 	}
 	wp_enqueue_style( 'clfa-fonts', 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap', array(), null );

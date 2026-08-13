@@ -120,6 +120,25 @@
 .clfa-oppform{max-width:640px}
 .clfa-oppclose{color:#a94d3b!important}
 
+/* ---- Member home ---- */
+.clfa-home .clfa-title{font-size:clamp(32px,4vw,52px)}
+.clfa-announcements{display:grid;gap:1px;background:#c8bdab;margin-bottom:8px}
+.clfa-announcement{background:#f3eee5;border-left:3px solid var(--rust);padding:20px 24px}
+.clfa-anndate{font:10px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#8a877e;margin:0 0 6px}
+.clfa-announcement h3{font-size:19px;letter-spacing:-.03em;margin:0 0 6px}
+.clfa-annbody{font-size:14px;line-height:1.65;color:#56606a;max-width:640px}
+.clfa-annbody p{margin:0 0 8px}
+.clfa-homegrid{display:grid;grid-template-columns:1.6fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
+.clfa-homemore{margin:14px 0 0}
+.clfa-homeopps{display:grid;gap:1px;background:#c8bdab}
+.clfa-homeopp{display:flex;gap:14px;align-items:center;background:var(--paper);padding:14px 16px;transition:background .2s}
+.clfa-homeopp:hover{background:#f3eee5}
+.clfa-homeopptitle{font-weight:600;font-size:14px;flex:1;min-width:0}
+.clfa-homeoppmeta{font:10px "DM Mono";letter-spacing:.08em;color:#8a877e;white-space:nowrap}
+.clfa-newmembers{grid-template-columns:1fr;gap:12px}
+.clfa-newmember{display:flex;align-items:center;gap:12px}
+.clfa-newmember .clfa-attendname{display:flex;flex-direction:column;gap:2px}
+
 /* ---- Responsive ---- */
 @media(max-width:720px){
   .clfa-dirhead{display:block}

@@ -6,6 +6,7 @@ Private, members-only alumni network for the Charlotte Leadership Forum. Bold Co
 - **CLF Alumni role** — members can sign in but have no wp-admin access.
 - **Members-only pages** (created automatically on activation):
   - `/alumni-login/` — themed sign-in page
+  - `/alumni-home/` — member home after sign-in: greeting, CLF announcements, upcoming events with RSVP status, newest opportunities, recently joined members
   - `/alumni/` — searchable member directory (name, class year, industry) + individual profiles
   - `/alumni-profile/` — the member's own profile editor (photo, spouse, class year, bio, work, links, contact visibility)
 - **Privacy** — everything is invisible to logged-out visitors; members choose whether email/phone are shown to other members.
@@ -14,6 +15,7 @@ Private, members-only alumni network for the Charlotte Leadership Forum. Bold Co
 - **Mentorship** — alumni opt in as mentors from their profile (areas of expertise, capacity, "how I can help"). Members browse `/alumni-mentors/`, filter by area/industry/class year, and express interest — the mentor gets a branded email with the requester's details and note (throttled to one request per mentor per week). Admins see the roster under CLF Alumni → Mentor Roster.
 - **Opportunities board** — members post job openings, business opportunities, or "looking for…" asks at `/alumni-board/` with contact method and optional expiry. Filterable by type, newest first; authors can close their own posts. Optional moderation toggle (posts arrive as Pending) on the Opportunities list screen. Members can opt in to a weekly Monday digest of new posts (profile → Email preferences), sent via the same branded SMTP pipeline.
 - **Nginx note:** member photos live in `wp-content/uploads/clf-alumni-private/` behind an `.htaccess` deny (Apache). If the site runs on Nginx, add `location ~* /uploads/clf-alumni-private/ { deny all; }` to the server config — filenames are randomized, but the deny rule is the real gate.
+- **Announcements** — admins post updates under CLF Alumni → Announcements; published announcements appear on `/alumni-home/`, newest first.
 - **Google Workspace email** — CLF Alumni → Email Settings configures SMTP (Gmail app password) so invitations come from the real CLF address; includes a test-email button.
 
 ## Install

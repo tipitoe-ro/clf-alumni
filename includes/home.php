@@ -63,9 +63,11 @@ function clfa_home_announcements( $limit = 5 ) {
 }
 
 function clfa_home_upcoming_events( $limit = 3 ) {
+	// Fetch all events (oldest events would otherwise crowd out upcoming
+	// ones under a fixed limit); the filter below keeps only future ones.
 	$events = get_posts( array(
 		'post_type'      => 'clfa_event',
-		'posts_per_page' => 50,
+		'posts_per_page' => -1,
 		'meta_key'       => 'clfa_start',
 		'orderby'        => 'meta_value',
 		'order'          => 'ASC',

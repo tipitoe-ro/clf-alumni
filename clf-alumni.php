@@ -3,7 +3,7 @@
  * Plugin Name:       CLF Alumni Network
  * Plugin URI:        https://app.global
  * Description:       Private alumni network for the Charlotte Leadership Forum — member profiles, searchable directory, and admin member management. Bold Conviction design.
- * Version:           1.5.3
+ * Version:           1.5.4
  * Author:            Always About People
  * License:           GPL-2.0-or-later
  * Text Domain:       clf-alumni
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CLFA_VERSION', '1.5.3' );
+define( 'CLFA_VERSION', '1.5.4' );
 define( 'CLFA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CLFA_URL', plugin_dir_url( __FILE__ ) );
 
@@ -99,6 +99,14 @@ function clfa_enqueue_assets() {
 		return;
 	}
 	wp_enqueue_style( 'clfa-fonts', 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap', array(), null );
-	wp_enqueue_style( 'clfa-style', CLFA_URL . 'assets/clf-alumni.css', array( 'clfa-fonts' ), CLFA_VERSION );
+	// Depend on the theme stylesheet when present so ours prints AFTER it —
+	// portal overrides rely on winning the cascade against theme rules.
+	$deps = array( 'clfa-fonts' );
+	if ( wp_style_is( 'clf-style', 'registered' ) || wp_style_is( 'clf-style', 'enqueued' ) ) {
+		$deps[] = 'clf-style';
+	}
+	wp_enqueue_style( 'clfa-style', CLFA_URL . 'assets/clf-alumni.css', $deps, CLFA_VERSION );
 }
-add_action( 'wp_enqueue_scripts', 'clfa_enqueue_assets' );
+// Priority 20: run after the theme's enqueue (priority 10) so the plugin
+// stylesheet is ordered after the theme stylesheet in the page head.
+add_action( 'wp_enqueue_scripts', 'clfa_enqueue_assets', 20 );

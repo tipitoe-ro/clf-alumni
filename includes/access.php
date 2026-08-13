@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
    Members-only guard for alumni pages
    ============================================================ */
 function clfa_guard_members_area() {
-	if ( ! is_page( array( 'alumni', 'alumni-profile', 'alumni-events' ) ) ) {
+	if ( ! is_page( array( 'alumni', 'alumni-profile', 'alumni-events', 'alumni-mentors', 'alumni-board' ) ) ) {
 		return;
 	}
 	if ( clfa_is_member() ) {

@@ -53,6 +53,9 @@ function clfa_handle_profile_save() {
 		clfa_store_private_photo( $user_id );
 	}
 
+	// Extra profile sections (mentorship opt-in, digest preference, …)
+	do_action( 'clfa_profile_extra_save', $user_id );
+
 	wp_safe_redirect( add_query_arg( 'saved', '1', clfa_page_url( 'alumni-profile' ) ) );
 	exit;
 }
@@ -113,6 +116,11 @@ function clfa_profile_shortcode() {
 	        <?php endif; ?>
 	      </label>
 	    <?php endforeach; ?>
+
+	    <?php do_action( 'clfa_profile_extra_fields', $user_id ); ?>
+
+	    <div class="clfa-section"><?php esc_html_e( 'Email preferences', 'clf-alumni' ); ?></div>
+	    <label class="clfa-check"><input type="checkbox" name="clfa_weekly_digest" <?php checked( get_user_meta( $user_id, 'clfa_weekly_digest', true ) ); ?>> <?php esc_html_e( 'Email me a weekly digest of new opportunities on the board', 'clf-alumni' ); ?></label>
 
 	    <div class="clfa-section"><?php esc_html_e( 'What other alumni can see', 'clf-alumni' ); ?></div>
 	    <label class="clfa-check"><input type="checkbox" name="clfa_show_email" <?php checked( get_user_meta( $user_id, 'clfa_show_email', true ) ); ?>> <?php esc_html_e( 'Show my email address to other members', 'clf-alumni' ); ?></label>

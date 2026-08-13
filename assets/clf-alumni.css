@@ -91,6 +91,35 @@
 .clfa-yesno{display:flex;gap:26px;margin-bottom:18px}
 .clfa-rsvpform .clfa-check{font-size:14px}
 
+/* ---- Mentorship ---- */
+.clfa-mentortoggle strong{font-weight:700}
+.clfa-mentorfields{margin:14px 0 6px;padding-left:26px;border-left:2px solid #c8bdab}
+.clfa-fieldlabel{display:block;font:11px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#a94d3b;margin:16px 0 8px}
+.clfa-checkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 18px;margin-bottom:14px}
+.clfa-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.clfa-mentornote{font:italic 19px "Playfair Display";line-height:1.5;margin:16px 0;max-width:560px}
+.clfa-interestform{max-width:640px;margin-top:24px}
+.clfa-single{display:flex;gap:34px;align-items:flex-start;margin-top:26px}
+.clfa-singlephoto .clfa-photo{width:150px;height:150px;object-fit:cover}
+
+/* ---- Opportunities board ---- */
+.clfa-typetabs{gap:0;border:1px solid #c8bdab;display:inline-flex;margin:22px 0}
+.clfa-tab{padding:11px 18px;font:11px "DM Mono";letter-spacing:.1em;text-transform:uppercase;border-right:1px solid #c8bdab}
+.clfa-tab:last-child{border-right:0}
+.clfa-tab.is-active{background:var(--ink);color:var(--paper)}
+.clfa-opplist{display:grid;gap:1px;background:#c8bdab;margin-bottom:44px}
+.clfa-oppcard{background:var(--paper);padding:24px}
+.clfa-opphead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.clfa-oppdate{font:10px "DM Mono";letter-spacing:.1em;color:#8a877e}
+.clfa-oppcard h3{font-size:21px;letter-spacing:-.03em;margin-bottom:8px}
+.clfa-oppbody{font-size:15px;line-height:1.65;color:#56606a;max-width:640px}
+.clfa-oppmeta{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:12px;color:#62645f;align-items:center}
+.clfa-badge-job{background:var(--ink);color:var(--paper)}
+.clfa-badge-business{background:var(--rust);color:#fff}
+.clfa-badge-looking{background:#d5c7ad;color:#4c4a41}
+.clfa-oppform{max-width:640px}
+.clfa-oppclose{color:#a94d3b!important}
+
 /* ---- Responsive ---- */
 @media(max-width:720px){
   .clfa-dirhead{display:block}

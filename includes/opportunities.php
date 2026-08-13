@@ -170,16 +170,27 @@ function clfa_opportunities_shortcode() {
 	if ( ! clfa_is_member() ) {
 		return '';
 	}
-	$type  = sanitize_key( $_GET['type'] ?? '' );
-	$types = clfa_opportunity_types();
-	$posts = clfa_get_active_opportunities( isset( $types[ $type ] ) ? $type : '' );
+	$type   = sanitize_key( $_GET['type'] ?? '' );
+	$search = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
+	$types  = clfa_opportunity_types();
+	$posts  = array_values( clfa_get_active_opportunities( isset( $types[ $type ] ) ? $type : '' ) );
+	if ( $search ) {
+		$needle = mb_strtolower( $search );
+		$posts  = array_values( array_filter( $posts, function ( $p ) use ( $needle ) {
+			return false !== mb_strpos( mb_strtolower( $p->post_title . ' ' . $p->post_content ), $needle );
+		} ) );
+	}
+	$digest_on = (bool) get_user_meta( get_current_user_id(), 'clfa_weekly_digest', true );
 
-	ob_start(); ?>
-	<div class="clfa-wrap">
-	  <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — opportunities', 'clf-alumni' ); ?></p>
-	  <h2 class="clfa-title"><?php esc_html_e( 'The', 'clf-alumni' ); ?> <em><?php esc_html_e( 'board.', 'clf-alumni' ); ?></em></h2>
-	  <p class="clfa-muted"><?php esc_html_e( 'Job openings, business opportunities, and asks — shared alumni to alumni, never public. Want these in your inbox? Turn on the weekly digest on your profile.', 'clf-alumni' ); ?></p>
-
+	ob_start();
+	echo clfa_portal_nav( 'board' ); // phpcs:ignore
+	echo clfa_portal_hero( // phpcs:ignore
+		esc_html__( 'The network at work', 'clf-alumni' ) . ' <span>· ' . esc_html( wp_date( 'Y' ) ) . '</span>',
+		esc_html__( 'The', 'clf-alumni' ) . ' <em>' . esc_html__( 'board.', 'clf-alumni' ) . '</em>',
+		__( 'Job openings, business opportunities, and asks — shared alumni to alumni, never public. Post one, answer one.', 'clf-alumni' ),
+		array( sprintf( _n( '%d active post', '%d active posts', count( $posts ), 'clf-alumni' ), count( $posts ) ) )
+	); ?>
+	<div class="clfa-wrap clfa-board">
 	  <?php if ( isset( $_GET['posted'] ) ) : ?>
 	    <?php if ( 'live' === $_GET['posted'] ) : ?><p class="clfa-success"><?php esc_html_e( 'Your post is live on the board.', 'clf-alumni' ); ?></p>
 	    <?php elseif ( 'pending' === $_GET['posted'] ) : ?><p class="clfa-success"><?php esc_html_e( 'Thanks — your post is in review and will appear once approved.', 'clf-alumni' ); ?></p>
@@ -188,45 +199,67 @@ function clfa_opportunities_shortcode() {
 	    <?php else : ?><p class="clfa-error"><?php esc_html_e( 'Something went wrong — please try again.', 'clf-alumni' ); ?></p><?php endif; ?>
 	  <?php endif; ?>
 
-	  <div class="clfa-filters clfa-typetabs">
-	    <a class="clfa-tab <?php echo $type ? '' : 'is-active'; ?>" href="<?php echo esc_url( clfa_page_url( 'alumni-board' ) ); ?>"><?php esc_html_e( 'All', 'clf-alumni' ); ?></a>
-	    <?php foreach ( $types as $key => $label ) : ?>
-	      <a class="clfa-tab <?php echo $type === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'type', $key, clfa_page_url( 'alumni-board' ) ) ); ?>"><?php echo esc_html( $label ); ?></a>
-	    <?php endforeach; ?>
+	  <div class="clfa-board-toolbar">
+	    <div class="clfa-filter-tabs">
+	      <a class="clfa-filter-tab <?php echo $type ? '' : 'is-active'; ?>" href="<?php echo esc_url( clfa_page_url( 'alumni-board' ) ); ?>"><?php esc_html_e( 'All posts', 'clf-alumni' ); ?></a>
+	      <?php foreach ( $types as $key => $label ) : ?>
+	        <a class="clfa-filter-tab <?php echo $type === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'type', $key, clfa_page_url( 'alumni-board' ) ) ); ?>"><?php echo esc_html( $label ); ?></a>
+	      <?php endforeach; ?>
+	    </div>
+	    <div class="clfa-board-tools">
+	      <form method="get" class="clfa-board-search">🔍<input type="search" name="q" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search the board…', 'clf-alumni' ); ?>">
+	        <?php if ( $type ) : ?><input type="hidden" name="type" value="<?php echo esc_attr( $type ); ?>"><?php endif; ?>
+	      </form>
+	      <a class="clfa-btn" href="#post">+ <?php esc_html_e( 'Post to the board', 'clf-alumni' ); ?></a>
+	    </div>
 	  </div>
 
+	  <p class="clfa-board-note">📌 <span><b><?php esc_html_e( 'House rule:', 'clf-alumni' ); ?></b> <?php esc_html_e( 'posts stay members-only and come down when filled. Reply directly to the poster.', 'clf-alumni' ); ?></span></p>
+
+	  <div class="clfa-board-list">
 	  <?php if ( ! $posts ) : ?>
-	    <p class="clfa-muted" style="margin:30px 0;"><?php esc_html_e( 'Nothing on the board right now — be the first to post below.', 'clf-alumni' ); ?></p>
+	    <p class="clfa-muted" style="padding:34px 0;"><?php esc_html_e( 'Nothing on the board right now — be the first to post below.', 'clf-alumni' ); ?></p>
 	  <?php else : ?>
-	    <div class="clfa-opplist">
 	      <?php foreach ( $posts as $p ) :
 				$ptype   = get_post_meta( $p->ID, 'clfa_opp_type', true );
 				$contact = get_post_meta( $p->ID, 'clfa_opp_contact', true );
 				$expires = get_post_meta( $p->ID, 'clfa_opp_expires', true );
-				$author  = get_userdata( $p->post_author ); ?>
-	        <div class="clfa-oppcard">
-	          <div class="clfa-opphead">
-	            <span class="clfa-badge clfa-badge-<?php echo esc_attr( $ptype ); ?>"><?php echo esc_html( $types[ $ptype ] ?? $ptype ); ?></span>
-	            <span class="clfa-oppdate"><?php echo esc_html( get_the_date( 'M j, Y', $p ) ); ?></span>
+				$author  = get_userdata( $p->post_author );
+				$icons   = array( 'job' => '💼', 'business' => '🤝', 'looking' => '🔎' ); ?>
+	        <article class="clfa-opp-card">
+	          <div class="clfa-opp-kind is-<?php echo esc_attr( $ptype ); ?>"><?php echo esc_html( ( $icons[ $ptype ] ?? '' ) . ' ' . ( $types[ $ptype ] ?? $ptype ) ); ?></div>
+	          <div class="clfa-opp-main">
+	            <h2><?php echo esc_html( $p->post_title ); ?></h2>
+	            <div class="clfa-opp-body"><?php echo wpautop( esc_html( $p->post_content ) ); // phpcs:ignore ?></div>
+	            <?php if ( $author ) :
+					$ayear = get_user_meta( $author->ID, 'clfa_class_year', true ); ?>
+	              <a class="clfa-opp-by" href="<?php echo esc_url( add_query_arg( 'member', $author->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>">
+	                <?php echo clfa_avatar( $author->ID ); // phpcs:ignore ?>
+	                <span><strong><?php echo esc_html( $author->display_name ); ?></strong><small><?php echo esc_html( $ayear ? sprintf( __( 'Class of %s', 'clf-alumni' ), $ayear ) : __( 'CLF alumni', 'clf-alumni' ) ); ?></small></span>
+	              </a>
+	            <?php endif; ?>
 	          </div>
-	          <h3><?php echo esc_html( $p->post_title ); ?></h3>
-	          <div class="clfa-oppbody"><?php echo wpautop( esc_html( $p->post_content ) ); // phpcs:ignore ?></div>
-	          <p class="clfa-oppmeta">
-	            <?php if ( $author ) : ?>
-	              <a class="clfa-textlink" href="<?php echo esc_url( add_query_arg( 'member', $author->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>"><?php echo esc_html( sprintf( __( 'Posted by %s', 'clf-alumni' ), $author->display_name ) ); ?></a>
-	            <?php endif; ?>
-	            <?php if ( $contact ) : ?><span class="clfa-oppcontact"><?php echo esc_html( sprintf( __( 'Contact: %s', 'clf-alumni' ), $contact ) ); ?></span><?php endif; ?>
-	            <?php if ( $expires ) : ?><span class="clfa-oppexpiry"><?php echo esc_html( sprintf( __( 'Open until %s', 'clf-alumni' ), wp_date( 'M j, Y', clfa_local_ts( $expires . ' 12:00:00' ) ) ) ); ?></span><?php endif; ?>
+	          <div class="clfa-opp-action">
+	            <span class="clfa-opp-date"><?php echo esc_html( get_the_date( 'M j, Y', $p ) ); ?></span>
+	            <?php if ( $contact ) : ?><span class="clfa-textlink"><?php echo esc_html( $contact ); ?></span><?php endif; ?>
+	            <?php if ( $expires ) : ?><span class="clfa-opp-expiry"><?php echo esc_html( sprintf( __( 'Open until %s', 'clf-alumni' ), wp_date( 'M j', clfa_local_ts( $expires . ' 12:00:00' ) ) ) ); ?></span><?php endif; ?>
 	            <?php if ( (int) $p->post_author === get_current_user_id() || current_user_can( 'manage_options' ) ) : ?>
-	              <a class="clfa-textlink clfa-oppclose" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'clfa_close_opp', $p->ID, clfa_page_url( 'alumni-board' ) ), 'clfa_close_' . $p->ID ) ); ?>"><?php esc_html_e( 'Close this post', 'clf-alumni' ); ?></a>
+	              <a class="clfa-oppclose" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'clfa_close_opp', $p->ID, clfa_page_url( 'alumni-board' ) ), 'clfa_close_' . $p->ID ) ); ?>"><?php esc_html_e( 'Close this post', 'clf-alumni' ); ?></a>
 	            <?php endif; ?>
-	          </p>
-	        </div>
+	          </div>
+	        </article>
 	      <?php endforeach; ?>
-	    </div>
 	  <?php endif; ?>
+	  </div>
 
-	  <div class="clfa-section" id="post"><?php esc_html_e( 'Share an opportunity', 'clf-alumni' ); ?></div>
+	  <div class="clfa-board-footer">
+	    <div><strong><?php esc_html_e( 'Never miss a post.', 'clf-alumni' ); ?></strong><small><?php esc_html_e( 'Get a weekly digest of new board activity every Monday morning.', 'clf-alumni' ); ?></small></div>
+	    <a class="clfa-digest-btn <?php echo $digest_on ? 'is-on' : ''; ?>" href="<?php echo esc_url( clfa_page_url( 'alumni-profile' ) ); ?>"><?php echo $digest_on ? esc_html__( '✓ Digest is on', 'clf-alumni' ) : esc_html__( 'Turn on in your profile', 'clf-alumni' ); ?></a>
+	  </div>
+
+	  <div class="clfa-post-section" id="post">
+	    <span class="clfa-mono-label"><?php esc_html_e( 'Share an opportunity', 'clf-alumni' ); ?></span>
+	    <h2><?php esc_html_e( 'Put it on the', 'clf-alumni' ); ?> <em><?php esc_html_e( 'board.', 'clf-alumni' ); ?></em></h2>
 	  <form method="post" class="clfa-form clfa-oppform">
 	    <?php wp_nonce_field( 'clfa_submit_opportunity', 'clfa_opp_nonce' ); ?>
 	    <div class="clfa-row">
@@ -248,6 +281,7 @@ function clfa_opportunities_shortcode() {
 	      <p class="clfa-muted clfa-small"><?php esc_html_e( 'Posts are reviewed by CLF before they appear.', 'clf-alumni' ); ?></p>
 	    <?php endif; ?>
 	  </form>
+	  </div>
 	</div>
 	<?php
 	return ob_get_clean();

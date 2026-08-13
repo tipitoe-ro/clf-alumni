@@ -38,74 +38,85 @@ function clfa_directory_shortcode() {
 	if ( $industry ) {
 		$args['meta_query'][] = array( 'key' => 'clfa_industry', 'value' => $industry, 'compare' => '=' );
 	}
-	if ( $search ) {
-		$args['search']         = '*' . $search . '*';
-		$args['search_columns'] = array( 'display_name', 'user_email' );
-	}
 	$members = get_users( $args );
+
+	// Search across name, role, and company (mockup: "Search by name, role, or company")
+	if ( $search ) {
+		$needle  = mb_strtolower( $search );
+		$members = array_values( array_filter( $members, function ( $m ) use ( $needle ) {
+			$hay = mb_strtolower( $m->display_name . ' ' . get_user_meta( $m->ID, 'clfa_profession', true ) . ' ' . get_user_meta( $m->ID, 'clfa_company', true ) );
+			return false !== mb_strpos( $hay, $needle );
+		} ) );
+	}
 
 	// Distinct class years for the filter dropdown
 	global $wpdb;
 	$years = $wpdb->get_col( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = 'clfa_class_year' AND meta_value != '' ORDER BY meta_value DESC" );
 
-	ob_start(); ?>
-	<div class="clfa-wrap clfa-directory">
-	  <div class="clfa-dirhead">
-	    <div>
-	      <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — members only', 'clf-alumni' ); ?></p>
-	      <h2 class="clfa-title"><?php esc_html_e( 'Find your', 'clf-alumni' ); ?> <em><?php esc_html_e( 'people.', 'clf-alumni' ); ?></em></h2>
-	    </div>
-	    <div class="clfa-dirlinks">
-	      <a class="clfa-btn" href="<?php echo esc_url( clfa_page_url( 'alumni-profile' ) ); ?>"><?php esc_html_e( 'Edit my profile', 'clf-alumni' ); ?></a>
-	      <a class="clfa-textlink" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Sign out', 'clf-alumni' ); ?></a>
-	    </div>
-	  </div>
+	$total_members = count( get_users( array( 'role' => 'clf_alumni', 'fields' => 'ID' ) ) );
+	$class_count   = count( $years );
 
-	  <form method="get" class="clfa-filters">
-	    <input type="search" name="q" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search by name…', 'clf-alumni' ); ?>">
-	    <select name="class_year">
-	      <option value=""><?php esc_html_e( 'All class years', 'clf-alumni' ); ?></option>
+	ob_start();
+	echo clfa_portal_nav( 'directory' ); // phpcs:ignore
+	echo clfa_portal_hero( // phpcs:ignore
+		esc_html__( 'The member register', 'clf-alumni' ) . ' <span>· ' . esc_html( wp_date( 'Y' ) ) . '</span>',
+		esc_html__( 'People who', 'clf-alumni' ) . ' <em>' . esc_html__( 'lead here.', 'clf-alumni' ) . '</em>',
+		__( 'Every member of the Forum, in one place. Find a classmate, an industry peer, or your next great conversation.', 'clf-alumni' ),
+		array(
+			sprintf( _n( '%d member', '%d members', $total_members, 'clf-alumni' ), $total_members ),
+			sprintf( _n( '%d class', '%d classes', $class_count, 'clf-alumni' ), max( 1, $class_count ) ),
+		)
+	); ?>
+	<div class="clfa-wrap clfa-directory">
+	  <form method="get" class="clfa-toolbar">
+	    <label class="clfa-searchbox">🔍<input type="search" name="q" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search by name, role, or company…', 'clf-alumni' ); ?>"></label>
+	    <span class="clfa-filter"><select name="class_year" onchange="this.form.submit()">
+	      <option value=""><?php esc_html_e( 'All classes', 'clf-alumni' ); ?></option>
 	      <?php foreach ( $years as $y ) : ?>
 	        <option value="<?php echo esc_attr( $y ); ?>" <?php selected( $class, $y ); ?>><?php echo esc_html( sprintf( __( 'Class of %s', 'clf-alumni' ), $y ) ); ?></option>
 	      <?php endforeach; ?>
-	    </select>
-	    <select name="industry">
+	    </select></span>
+	    <span class="clfa-filter"><select name="industry" onchange="this.form.submit()">
 	      <option value=""><?php esc_html_e( 'All industries', 'clf-alumni' ); ?></option>
 	      <?php foreach ( clfa_industries() as $ind ) : ?>
 	        <option value="<?php echo esc_attr( $ind ); ?>" <?php selected( $industry, $ind ); ?>><?php echo esc_html( $ind ); ?></option>
 	      <?php endforeach; ?>
-	    </select>
-	    <button type="submit" class="clfa-btn"><?php esc_html_e( 'Filter', 'clf-alumni' ); ?></button>
+	    </select></span>
+	    <button type="submit" class="clfa-filterbtn"><?php esc_html_e( 'Search', 'clf-alumni' ); ?></button>
 	    <?php if ( $search || $class || $industry ) : ?>
 	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>"><?php esc_html_e( 'Clear', 'clf-alumni' ); ?></a>
 	    <?php endif; ?>
 	  </form>
 
-	  <?php if ( empty( $members ) ) : ?>
-	    <p class="clfa-muted clfa-empty"><?php esc_html_e( 'No members match — try widening your search.', 'clf-alumni' ); ?></p>
-	  <?php else : ?>
-	    <p class="clfa-count"><?php echo esc_html( sprintf( _n( '%d member', '%d members', count( $members ), 'clf-alumni' ), count( $members ) ) ); ?></p>
-	    <div class="clfa-grid">
+	  <div class="clfa-results-line">
+	    <h2><?php echo ( $search || $class || $industry ) ? esc_html__( 'Matching members', 'clf-alumni' ) : esc_html__( 'All members', 'clf-alumni' ); ?></h2>
+	    <span><?php echo esc_html( sprintf( __( 'Showing %d', 'clf-alumni' ), count( $members ) ) ); ?></span>
+	  </div>
+
+	  <div class="clfa-member-grid">
+	    <?php if ( empty( $members ) ) : ?>
+	      <div class="clfa-empty-state"><p><?php esc_html_e( 'No members match.', 'clf-alumni' ); ?></p><?php esc_html_e( 'Try widening your search or clearing the filters.', 'clf-alumni' ); ?></div>
+	    <?php else : ?>
 	      <?php foreach ( $members as $m ) :
 			$year = get_user_meta( $m->ID, 'clfa_class_year', true );
 			$prof = get_user_meta( $m->ID, 'clfa_profession', true );
 			$comp = get_user_meta( $m->ID, 'clfa_company', true );
-			$ind  = get_user_meta( $m->ID, 'clfa_industry', true );
+			$city = get_user_meta( $m->ID, 'clfa_city', true );
 			$url  = add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni-directory' ) ); ?>
-	        <a class="clfa-cardlink" href="<?php echo esc_url( $url ); ?>">
-	          <div class="clfa-card clfa-membercard">
-	            <?php echo clfa_member_photo( $m->ID, 'medium' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-	            <div class="clfa-cardbody">
-	              <h3><?php echo esc_html( $m->display_name ); ?></h3>
-	              <?php if ( $year ) : ?><span class="clfa-badge"><?php echo esc_html( sprintf( __( 'Class of %s', 'clf-alumni' ), $year ) ); ?></span><?php endif; ?>
-	              <?php if ( $prof || $comp ) : ?><p><?php echo esc_html( trim( $prof . ( $prof && $comp ? ' — ' : '' ) . $comp ) ); ?></p><?php endif; ?>
-	              <?php if ( $ind ) : ?><small><?php echo esc_html( $ind ); ?></small><?php endif; ?>
-	            </div>
-	          </div>
+	        <a class="clfa-member-card" href="<?php echo esc_url( $url ); ?>">
+	          <?php echo clfa_avatar( $m->ID ); // phpcs:ignore ?>
+	          <?php if ( $year ) : ?><span class="clfa-card-year"><?php echo esc_html( sprintf( __( 'Class of %s', 'clf-alumni' ), $year ) ); ?></span><?php endif; ?>
+	          <h3><?php echo esc_html( $m->display_name ); ?></h3>
+	          <?php if ( $prof ) : ?><p class="clfa-member-role"><?php echo esc_html( $prof ); ?></p><?php endif; ?>
+	          <?php if ( $comp ) : ?><p class="clfa-member-company"><?php echo esc_html( $comp ); ?></p><?php endif; ?>
+	          <span class="clfa-card-bottom">
+	            <span class="clfa-member-city"><?php echo esc_html( $city ?: '' ); ?></span>
+	            <span class="clfa-view-profile"><?php esc_html_e( 'View profile', 'clf-alumni' ); ?> →</span>
+	          </span>
 	        </a>
 	      <?php endforeach; ?>
-	    </div>
-	  <?php endif; ?>
+	    <?php endif; ?>
+	  </div>
 	</div>
 	<?php
 	return ob_get_clean();
@@ -118,7 +129,7 @@ add_shortcode( 'clf_alumni_directory', 'clfa_directory_shortcode' );
 function clfa_render_single_member( $member_id ) {
 	$member = get_userdata( $member_id );
 	if ( ! $member || ! in_array( 'clf_alumni', (array) $member->roles, true ) || get_user_meta( $member_id, 'clfa_disabled', true ) ) {
-		return '<div class="clfa-wrap"><p class="clfa-muted">' . esc_html__( 'Member not found.', 'clf-alumni' ) . '</p><p><a class="clfa-textlink" href="' . esc_url( clfa_page_url( 'alumni-directory' ) ) . '">&larr; ' . esc_html__( 'Back to directory', 'clf-alumni' ) . '</a></p></div>';
+		return clfa_portal_nav( 'directory' ) . '<div class="clfa-wrap"><p class="clfa-muted" style="padding-top:47px;">' . esc_html__( 'Member not found.', 'clf-alumni' ) . '</p><p><a class="clfa-back" href="' . esc_url( clfa_page_url( 'alumni-directory' ) ) . '">&larr; ' . esc_html__( 'Back to directory', 'clf-alumni' ) . '</a></p></div>';
 	}
 
 	$meta = array();
@@ -127,41 +138,133 @@ function clfa_render_single_member( $member_id ) {
 	}
 	$show_email = get_user_meta( $member_id, 'clfa_show_email', true );
 	$show_phone = get_user_meta( $member_id, 'clfa_show_phone', true );
+	$first      = $member->first_name ?: $member->display_name;
+	$city       = $meta['clfa_city'] ?? '';
+	$is_mentor  = function_exists( 'clfa_is_mentor' ) && clfa_is_mentor( $member_id );
 
-	ob_start(); ?>
+	// Their live board posts
+	$their_opps = get_posts( array(
+		'post_type'      => 'clfa_opportunity',
+		'post_status'    => 'publish',
+		'author'         => $member_id,
+		'posts_per_page' => -1,
+	) );
+	$their_opps = array_slice( array_values( array_filter( $their_opps, function ( $p ) {
+		return ! clfa_opportunity_expired( $p->ID );
+	} ) ), 0, 4 );
+	$opp_types  = clfa_opportunity_types();
+
+	ob_start();
+	echo clfa_portal_nav( 'directory' ); // phpcs:ignore ?>
 	<div class="clfa-wrap clfa-single">
-	  <p><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">&larr; <?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a></p>
-	  <div class="clfa-singlegrid">
-	    <div class="clfa-singlephoto"><?php echo clfa_member_photo( $member_id, 'large' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+	  <a class="clfa-back" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">← <?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a>
+	  <div style="border-bottom:1px solid #cec4b4;padding-bottom:44px;">
+	    <p class="clfa-kicker"><?php esc_html_e( 'A fellow member', 'clf-alumni' ); ?><?php echo $city ? esc_html( ' · ' . $city ) : ''; ?></p>
+	    <h1 class="clfa-title" style="font-size:clamp(48px,6vw,84px);letter-spacing:-.08em;line-height:.88;margin:0;"><?php esc_html_e( 'Meet', 'clf-alumni' ); ?> <em><?php echo esc_html( $member->display_name ); ?>.</em></h1>
+	  </div>
+
+	  <div class="clfa-profile-grid">
 	    <div>
-	      <p class="clfa-kicker"><?php echo $meta['clfa_class_year'] ? esc_html( sprintf( __( 'CLF Class of %s', 'clf-alumni' ), $meta['clfa_class_year'] ) ) : esc_html__( 'CLF Alumni', 'clf-alumni' ); ?></p>
-	      <h2 class="clfa-title"><?php echo esc_html( $member->display_name ); ?></h2>
-	      <?php if ( $meta['clfa_spouse'] ) : ?>
-	        <p class="clfa-muted"><?php echo esc_html( sprintf( __( 'Married to %s', 'clf-alumni' ), $meta['clfa_spouse'] ) ); ?></p>
-	      <?php endif; ?>
-	      <?php if ( $meta['clfa_profession'] || $meta['clfa_company'] ) : ?>
-	        <p class="clfa-work"><?php echo esc_html( trim( $meta['clfa_profession'] . ( $meta['clfa_profession'] && $meta['clfa_company'] ? ' — ' : '' ) . $meta['clfa_company'] ) ); ?>
-	        <?php if ( $meta['clfa_industry'] ) : ?><span class="clfa-badge"><?php echo esc_html( $meta['clfa_industry'] ); ?></span><?php endif; ?></p>
-	      <?php endif; ?>
+	      <div class="clfa-identity">
+	        <?php echo clfa_avatar( $member_id, 'clfa-avatar-lg' ); // phpcs:ignore ?>
+	        <div>
+	          <h2><?php echo esc_html( $member->display_name ); ?></h2>
+	          <?php if ( $meta['clfa_profession'] ) : ?><p><?php echo esc_html( $meta['clfa_profession'] ); ?></p><?php endif; ?>
+	          <?php if ( $meta['clfa_company'] ) : ?><p><strong><?php echo esc_html( $meta['clfa_company'] ); ?></strong></p><?php endif; ?>
+	          <p class="clfa-class"><?php
+				$bits = array();
+				if ( $meta['clfa_class_year'] ) {
+					$bits[] = sprintf( __( 'Class of %s', 'clf-alumni' ), $meta['clfa_class_year'] );
+				}
+				if ( $meta['clfa_industry'] ) {
+					$bits[] = $meta['clfa_industry'];
+				}
+				echo esc_html( implode( ' · ', $bits ) );
+	          ?></p>
+	        </div>
+	      </div>
+
 	      <?php if ( $meta['clfa_bio'] ) : ?>
-	        <div class="clfa-bio"><?php echo wpautop( esc_html( $meta['clfa_bio'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+	        <div class="clfa-bio-block">
+	          <h3><?php esc_html_e( 'In their words', 'clf-alumni' ); ?></h3>
+	          <div class="clfa-bio"><?php echo wpautop( esc_html( $meta['clfa_bio'] ) ); // phpcs:ignore ?></div>
+	        </div>
 	      <?php endif; ?>
-	      <div class="clfa-contact">
-	        <?php if ( $show_email ) : ?>
-	          <a class="clfa-btn" href="mailto:<?php echo esc_attr( $member->user_email ); ?>"><?php esc_html_e( 'Email', 'clf-alumni' ); ?></a>
-	        <?php endif; ?>
-	        <?php if ( $show_phone && $meta['clfa_phone'] ) : ?>
-	          <a class="clfa-btn clfa-btn-outline" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $meta['clfa_phone'] ) ); ?>"><?php echo esc_html( $meta['clfa_phone'] ); ?></a>
-	        <?php endif; ?>
-	        <?php if ( $meta['clfa_linkedin'] ) : ?>
-	          <a class="clfa-textlink" href="<?php echo esc_url( $meta['clfa_linkedin'] ); ?>" target="_blank" rel="noopener">LinkedIn ↗</a>
-	        <?php endif; ?>
-	        <?php if ( $meta['clfa_website'] ) : ?>
-	          <a class="clfa-textlink" href="<?php echo esc_url( $meta['clfa_website'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Website', 'clf-alumni' ); ?> ↗</a>
-	        <?php endif; ?>
+
+	      <div class="clfa-detail-list">
+	        <?php
+	        $details = array(
+				__( 'At the table', 'clf-alumni' )  => $meta['clfa_industry'],
+				__( 'Class year', 'clf-alumni' )    => $meta['clfa_class_year'] ? sprintf( __( 'Class of %s', 'clf-alumni' ), $meta['clfa_class_year'] ) : '',
+				__( 'Based in', 'clf-alumni' )      => $city,
+				__( 'Spouse', 'clf-alumni' )        => $meta['clfa_spouse'],
+	        );
+	        foreach ( $details as $label => $value ) :
+				if ( ! $value ) {
+					continue;
+				} ?>
+	          <div class="clfa-detail"><label><?php echo esc_html( $label ); ?></label><strong><?php echo esc_html( $value ); ?></strong></div>
+	        <?php endforeach; ?>
 	      </div>
 	    </div>
+
+	    <aside class="clfa-profile-side">
+	      <div class="clfa-contact-card">
+	        <span class="clfa-mono-label"><?php esc_html_e( 'Get in touch', 'clf-alumni' ); ?></span>
+	        <h3><?php echo esc_html( sprintf( __( 'Reach %s', 'clf-alumni' ), $first ) ); ?></h3>
+	        <?php if ( $show_email ) : ?>
+	          <a class="clfa-contact-row" href="mailto:<?php echo esc_attr( $member->user_email ); ?>">✉ <strong><?php echo esc_html( $member->user_email ); ?></strong><span><?php esc_html_e( 'Email', 'clf-alumni' ); ?></span></a>
+	        <?php endif; ?>
+	        <?php if ( $show_phone && $meta['clfa_phone'] ) : ?>
+	          <a class="clfa-contact-row" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $meta['clfa_phone'] ) ); ?>">☎ <strong><?php echo esc_html( $meta['clfa_phone'] ); ?></strong><span><?php esc_html_e( 'Phone', 'clf-alumni' ); ?></span></a>
+	        <?php endif; ?>
+	        <?php if ( $meta['clfa_linkedin'] ) : ?>
+	          <a class="clfa-contact-row" href="<?php echo esc_url( $meta['clfa_linkedin'] ); ?>" target="_blank" rel="noopener">in <strong>LinkedIn</strong><span><?php esc_html_e( 'Profile', 'clf-alumni' ); ?> ↗</span></a>
+	        <?php endif; ?>
+	        <?php if ( $meta['clfa_website'] ) : ?>
+	          <a class="clfa-contact-row" href="<?php echo esc_url( $meta['clfa_website'] ); ?>" target="_blank" rel="noopener">🌐 <strong><?php esc_html_e( 'Website', 'clf-alumni' ); ?></strong><span>↗</span></a>
+	        <?php endif; ?>
+	        <?php if ( ! $show_email && ! ( $show_phone && $meta['clfa_phone'] ) && ! $meta['clfa_linkedin'] && ! $meta['clfa_website'] ) : ?>
+	          <p style="font-size:12px;color:#6b6f66;margin:14px 0 0;"><?php echo esc_html( sprintf( __( '%s keeps contact details private.', 'clf-alumni' ), $first ) ); ?></p>
+	        <?php endif; ?>
+	        <?php if ( $show_email ) : ?>
+	          <a class="clfa-message-btn" href="mailto:<?php echo esc_attr( $member->user_email ); ?>"><?php echo esc_html( sprintf( __( 'Send %s a note', 'clf-alumni' ), $first ) ); ?> <span>→</span></a>
+	        <?php endif; ?>
+	      </div>
+
+	      <?php if ( $is_mentor ) : ?>
+	        <div class="clfa-mentor-card">
+	          <span class="clfa-mono-label"><?php esc_html_e( 'Mentoring', 'clf-alumni' ); ?></span>
+	          <p><?php
+				$note = get_user_meta( $member_id, 'clfa_mentor_note', true );
+				echo esc_html( $note ?: sprintf( __( '%s is part of the CLF mentor roster and open to walking alongside fellow members.', 'clf-alumni' ), $first ) );
+	          ?></p>
+	          <div class="clfa-mentor-status">● <?php esc_html_e( 'Open to mentoring', 'clf-alumni' ); ?></div>
+	          <p style="margin:16px 0 0;"><a class="clfa-link-mono" href="<?php echo esc_url( add_query_arg( 'mentor', $member_id, clfa_page_url( 'alumni-mentors' ) ) ); ?>"><?php esc_html_e( 'View mentor profile', 'clf-alumni' ); ?> ↗</a></p>
+	        </div>
+	      <?php endif; ?>
+	    </aside>
 	  </div>
+
+	  <?php if ( $their_opps ) : ?>
+	    <section class="clfa-member-opps">
+	      <div class="clfa-member-opps-head">
+	        <h2><?php echo esc_html( sprintf( __( 'On %s\'s board', 'clf-alumni' ), $first ) ); ?></h2>
+	        <span><?php echo esc_html( sprintf( _n( '%d active post', '%d active posts', count( $their_opps ), 'clf-alumni' ), count( $their_opps ) ) ); ?></span>
+	      </div>
+	      <?php foreach ( $their_opps as $p ) :
+			$ptype = get_post_meta( $p->ID, 'clfa_opp_type', true ); ?>
+	        <article class="clfa-member-opp">
+	          <div>
+	            <span class="clfa-opp-kind is-<?php echo esc_attr( $ptype ); ?>"><?php echo esc_html( $opp_types[ $ptype ] ?? $ptype ); ?></span>
+	            <h3><?php echo esc_html( $p->post_title ); ?></h3>
+	            <p><?php echo esc_html( wp_trim_words( $p->post_content, 28 ) ); ?></p>
+	          </div>
+	          <a class="clfa-link-mono" href="<?php echo esc_url( clfa_page_url( 'alumni-board' ) ); ?>"><?php esc_html_e( 'View on the board', 'clf-alumni' ); ?> →</a>
+	        </article>
+	      <?php endforeach; ?>
+	    </section>
+	  <?php endif; ?>
 	</div>
 	<?php
 	return ob_get_clean();

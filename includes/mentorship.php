@@ -131,7 +131,16 @@ function clfa_mentors_shortcode() {
 		return ! get_user_meta( $u->ID, 'clfa_disabled', true );
 	} );
 
-	ob_start(); ?>
+	ob_start();
+	echo clfa_portal_nav( 'mentors' ); // phpcs:ignore
+	if ( ! $single ) {
+		echo clfa_portal_hero( // phpcs:ignore
+			esc_html__( 'Mentorship', 'clf-alumni' ) . ' <span>· ' . esc_html__( 'Members only', 'clf-alumni' ) . '</span>',
+			esc_html__( 'Find a', 'clf-alumni' ) . ' <em>' . esc_html__( 'mentor.', 'clf-alumni' ) . '</em>',
+			__( 'Every mentor here is a CLF alum who raised their hand. Reach out — CLF makes the introduction, you take it from there.', 'clf-alumni' ),
+			array( sprintf( _n( '%d mentor', '%d mentors', count( $mentors ), 'clf-alumni' ), count( $mentors ) ) )
+		);
+	} ?>
 	<div class="clfa-wrap">
 	  <?php if ( $single ) :
 			$m = get_userdata( $single );
@@ -185,18 +194,14 @@ function clfa_mentors_shortcode() {
 			} );
 			$years = array_unique( array_filter( array_map( fn( $u ) => get_user_meta( $u->ID, 'clfa_class_year', true ), $mentors ) ) );
 			rsort( $years ); ?>
-	    <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — mentorship', 'clf-alumni' ); ?></p>
-	    <h2 class="clfa-title"><?php esc_html_e( 'Find a', 'clf-alumni' ); ?> <em><?php esc_html_e( 'mentor.', 'clf-alumni' ); ?></em></h2>
-	    <p class="clfa-muted"><?php esc_html_e( 'Every mentor here is a CLF alum who raised their hand. Reach out — CLF makes the introduction, you take it from there. Want to mentor? Opt in on your profile.', 'clf-alumni' ); ?></p>
-
-	    <form method="get" class="clfa-filters">
-	      <select name="area"><option value=""><?php esc_html_e( 'All areas of help', 'clf-alumni' ); ?></option>
-	        <?php foreach ( clfa_expertise_areas() as $a ) : ?><option value="<?php echo esc_attr( $a ); ?>" <?php selected( $area, $a ); ?>><?php echo esc_html( $a ); ?></option><?php endforeach; ?></select>
-	      <select name="industry"><option value=""><?php esc_html_e( 'All industries', 'clf-alumni' ); ?></option>
-	        <?php foreach ( clfa_industries() as $i ) : ?><option value="<?php echo esc_attr( $i ); ?>" <?php selected( $industry, $i ); ?>><?php echo esc_html( $i ); ?></option><?php endforeach; ?></select>
-	      <select name="year"><option value=""><?php esc_html_e( 'All class years', 'clf-alumni' ); ?></option>
-	        <?php foreach ( $years as $y ) : ?><option value="<?php echo esc_attr( $y ); ?>" <?php selected( $year, $y ); ?>><?php echo esc_html( $y ); ?></option><?php endforeach; ?></select>
-	      <button type="submit" class="clfa-btn clfa-btn-small"><?php esc_html_e( 'Filter', 'clf-alumni' ); ?></button>
+	    <form method="get" class="clfa-toolbar">
+	      <span class="clfa-filter"><select name="area" onchange="this.form.submit()"><option value=""><?php esc_html_e( 'All areas of help', 'clf-alumni' ); ?></option>
+	        <?php foreach ( clfa_expertise_areas() as $a ) : ?><option value="<?php echo esc_attr( $a ); ?>" <?php selected( $area, $a ); ?>><?php echo esc_html( $a ); ?></option><?php endforeach; ?></select></span>
+	      <span class="clfa-filter"><select name="industry" onchange="this.form.submit()"><option value=""><?php esc_html_e( 'All industries', 'clf-alumni' ); ?></option>
+	        <?php foreach ( clfa_industries() as $i ) : ?><option value="<?php echo esc_attr( $i ); ?>" <?php selected( $industry, $i ); ?>><?php echo esc_html( $i ); ?></option><?php endforeach; ?></select></span>
+	      <span class="clfa-filter"><select name="year" onchange="this.form.submit()"><option value=""><?php esc_html_e( 'All class years', 'clf-alumni' ); ?></option>
+	        <?php foreach ( $years as $y ) : ?><option value="<?php echo esc_attr( $y ); ?>" <?php selected( $year, $y ); ?>><?php echo esc_html( $y ); ?></option><?php endforeach; ?></select></span>
+	      <button type="submit" class="clfa-filterbtn"><?php esc_html_e( 'Filter', 'clf-alumni' ); ?></button>
 	    </form>
 
 	    <?php if ( ! $filtered ) : ?>

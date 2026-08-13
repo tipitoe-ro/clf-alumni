@@ -1,156 +1,401 @@
 /* ============================================================
-   CLF Alumni Network — Bold Conviction design
-   Scoped under .clfa-wrap (rendered inside theme page body)
+   CLF Alumni Network — Bold Conviction portal design (v1.5)
+   Pixel-matched to the approved canvas mockups: members-only
+   subnav band + Events-style editorial hero on every page.
    ============================================================ */
-.clfa-wrap{--ink:#172638;--paper:#eee9df;--rust:#a94d3b;--sand:#d5c7ad;font-family:Manrope,sans-serif;color:var(--ink);max-width:1180px;margin:0 auto;padding:20px 0 60px}
-.clfa-wrap *{box-sizing:border-box}
-.clfa-wrap a{text-decoration:none;color:inherit}
 
-.clfa-kicker{font:11px "DM Mono";letter-spacing:.13em;text-transform:uppercase;color:var(--rust);margin:0 0 14px}
+/* ---- Theme shell overrides on portal pages ---- */
+body.clfa-portal .clf{background:#f1ede5}
+body.clfa-portal .clf-pagehead{display:none}
+body.clfa-portal .clf-pagebody{max-width:none;padding:0;font-size:inherit;line-height:inherit;color:inherit}
+
+/* ---- Base tokens ---- */
+.clfa-wrap,.clfa-subnav,.clfa-hero{--ink:#182a3d;--paper:#f1ede5;--parchment:#eee9df;--sand:#ded2be;--rust:#b95e48;--line:#cec4b4;--muted:#66706e;font-family:Manrope,sans-serif;color:var(--ink)}
+.clfa-wrap *,.clfa-subnav *,.clfa-hero *{box-sizing:border-box}
+.clfa-wrap a,.clfa-subnav a{text-decoration:none;color:inherit}
+.clfa-wrap{max-width:1240px;margin:0 auto;padding:0 clamp(22px,6vw,92px) 110px}
+
+/* ---- Members-only subnav band ---- */
+.clfa-subnav{height:51px;background:var(--parchment);border-bottom:1px solid #cfc4b1;display:flex;align-items:center;padding:0 clamp(22px,5vw,76px);justify-content:space-between}
+.clfa-subnav-label{font:9px "DM Mono";letter-spacing:.11em;text-transform:uppercase;color:#968c7c;white-space:nowrap}
+.clfa-subnav-nav{display:flex;align-items:center;gap:27px;overflow-x:auto;scrollbar-width:none}
+.clfa-subnav-nav::-webkit-scrollbar{display:none}
+.clfa-subnav-nav a{font-size:11px;color:#66706e;padding:16px 0 14px;white-space:nowrap}
+.clfa-subnav-nav a.is-active,.clfa-subnav-nav a:hover{color:var(--rust);font-weight:700}
+.clfa-subnav-nav a.is-active{border-bottom:1px solid var(--rust)}
+.clfa-subnav-out{opacity:.7}
+
+/* ---- Editorial hero (Events treatment, shared by all pages) ---- */
+.clfa-hero{max-width:1240px;margin:0 auto;padding:72px clamp(22px,6vw,92px) 0;background:var(--paper)}
+.clfa-hero-inner{display:flex;justify-content:space-between;gap:45px;align-items:end;border-bottom:1px solid var(--line);padding-bottom:46px}
+.clfa-hero-kicker{font:10px "DM Mono";letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
+.clfa-hero-kicker span{color:#918a7d;margin-left:8px;letter-spacing:.16em}
+.clfa-hero h1{font-size:clamp(54px,7vw,94px);line-height:.86;letter-spacing:-.085em;margin:22px 0 0;font-weight:700;color:var(--ink)}
+.clfa-hero h1 em{font:italic 600 .94em "Playfair Display",serif;color:var(--rust);letter-spacing:-.07em}
+.clfa-hero-copy{max-width:310px;margin:0 0 4px}
+.clfa-hero-copy p{font-size:14px;line-height:1.7;color:#666a67;margin:0}
+.clfa-hero-meta{display:flex;gap:20px;margin-top:24px;flex-wrap:wrap}
+.clfa-hero-meta span{font:10px "DM Mono";letter-spacing:.1em;color:#8a8175;text-transform:uppercase}
+
+/* ---- Shared small pieces ---- */
+.clfa-kicker{font:10px "DM Mono";letter-spacing:.14em;text-transform:uppercase;color:var(--rust);margin:0 0 14px}
 .clfa-title{font-size:clamp(38px,5vw,64px);line-height:.92;letter-spacing:-.06em;font-weight:700;margin:0 0 18px}
 .clfa-title em{font-family:"Playfair Display",serif;font-style:italic;font-weight:600;color:var(--rust)}
-.clfa-muted{color:#636660;font-size:15px;line-height:1.7;max-width:560px}
+.clfa-muted{color:#66706e;font-size:14px;line-height:1.7;max-width:560px}
 .clfa-small{font-size:12px}
 .clfa-success{background:#dfe5d8;color:#3d5240;padding:12px 16px;font-size:13px;margin:18px 0}
 .clfa-error{background:#f0ded8;color:#8a3a2b;padding:12px 16px;font-size:13px;margin:18px 0}
+.clfa-mono-label{font:10px "DM Mono";letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
 
-.clfa-btn{display:inline-flex;align-items:center;gap:10px;background:var(--rust);color:#fff!important;border:0;padding:13px 17px;font:700 11px Manrope,sans-serif;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .2s}
-.clfa-btn:hover{background:#c26b55;transform:translateY(-2px)}
+.clfa-btn{display:inline-flex;align-items:center;gap:10px;background:var(--rust);color:#fff!important;border:0;padding:13px 16px;font:700 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.clfa-btn:hover{background:#a84f3c}
 .clfa-btn-outline{background:transparent;color:var(--ink)!important;border:1px solid #c8bdab}
 .clfa-btn-outline:hover{background:#e7dcc9}
-.clfa-textlink{font-size:12px;font-weight:700;letter-spacing:.05em;color:#69706a!important}
-.clfa-textlink:hover{color:var(--rust)!important}
+.clfa-textlink{font-size:11px;color:var(--rust)!important;display:inline-flex;align-items:center;gap:5px}
+.clfa-textlink:hover{text-decoration:underline}
+.clfa-link-mono{font:10px "DM Mono";letter-spacing:.08em;text-transform:uppercase;color:var(--rust)!important}
+.clfa-link-mono:hover{text-decoration:underline}
 
-/* ---- Forms ---- */
+/* ---- Avatars ---- */
+.clfa-avatar{width:59px;height:59px;border-radius:50%;object-fit:cover;display:grid;place-items:center;flex:none}
+.clfa-avatar-initials{color:#f8efe4;font:15px "DM Mono";letter-spacing:-.08em}
+.clfa-avatar-sm{width:35px;height:35px;font-size:10px}
+.clfa-avatar-xs{width:31px;height:31px;font-size:9px;border:2px solid var(--paper)}
+.clfa-avatar-lg{width:112px;height:112px;font-size:27px}
+
+/* ---- Section heads ---- */
+.clfa-section-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:14px}
+.clfa-section-head h2{font-size:18px;letter-spacing:-.045em;margin:0}
+
+/* ============================================================
+   Home — morning-briefing dashboard
+   ============================================================ */
+.clfa-home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr);gap:46px;padding:54px 0 0}
+.clfa-announcement{padding:26px 0 27px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:112px 1fr;gap:24px}
+.clfa-ann-date{font:10px "DM Mono";color:#8c776d;letter-spacing:.08em;text-transform:uppercase}
+.clfa-ann-type{font:9px "DM Mono";color:var(--rust);letter-spacing:.12em;margin-bottom:11px;display:block;text-transform:uppercase}
+.clfa-announcement h3{font-size:22px;letter-spacing:-.055em;margin:0 0 9px;font-weight:700}
+.clfa-announcement .clfa-ann-body{font-size:12px;line-height:1.65;color:var(--muted);max-width:520px}
+.clfa-announcement .clfa-ann-body p{margin:0 0 8px}
+.clfa-announcement .clfa-ann-body p:last-child{margin:0}
+.clfa-home-events{margin-top:56px}
+.clfa-home-event{display:grid;grid-template-columns:69px 1fr auto;gap:19px;align-items:center;padding:19px 0;border-bottom:1px solid var(--line)}
+.clfa-home-event-date{border-right:1px solid var(--line);display:flex;flex-direction:column;color:var(--rust);font:10px "DM Mono";letter-spacing:.1em;text-transform:uppercase}
+.clfa-home-event-date b{font:700 31px Manrope,sans-serif;letter-spacing:-.08em;color:var(--ink);line-height:1.15}
+.clfa-home-event h3{font-size:15px;margin:0 0 6px;font-weight:700}
+.clfa-home-event p{font:10px "DM Mono";color:#77766e;margin:0}
+.clfa-rsvp-chip{font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:10px 13px;border:1px solid var(--rust);color:var(--rust)!important;display:inline-flex;gap:7px;align-items:center;font-weight:700;white-space:nowrap}
+.clfa-rsvp-chip.is-confirmed{background:var(--rust);color:#fff!important}
+.clfa-side-card{background:var(--sand);padding:24px 23px;margin-bottom:26px}
+.clfa-side-card h2{font-size:19px;letter-spacing:-.05em;margin:11px 0 8px}
+.clfa-side-card p{font-size:12px;line-height:1.6;color:#686860;margin:0 0 18px}
+.clfa-side-dark{background:var(--ink);color:#f1ede4;padding:25px 23px;margin-bottom:26px}
+.clfa-side-dark .clfa-mono-label{color:#e4a08a}
+.clfa-side-dark h2{font-size:22px;line-height:1.05;letter-spacing:-.06em;margin:15px 0 12px;color:#f1ede4}
+.clfa-side-dark p{font-size:12px;line-height:1.6;color:#bdc2be;margin:0 0 22px}
+.clfa-side-dark .clfa-link-mono{color:#e0a18d!important}
+.clfa-new-members{border-top:1px solid var(--line);padding-top:24px}
+.clfa-new-member{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.clfa-new-member strong{display:block;font-size:12px}
+.clfa-new-member small{display:block;color:#777970;font-size:10px;margin-top:3px}
+.clfa-new-member>span{font:9px "DM Mono";color:#988b78;margin-left:auto}
+.clfa-quick{background:#c9bba6;padding:32px clamp(22px,6vw,92px);max-width:1240px;margin:70px auto 0}
+.clfa-quick-inner{display:grid;grid-template-columns:1fr 2fr;gap:45px;align-items:center}
+.clfa-quick h2{font-size:31px;line-height:.98;letter-spacing:-.07em;margin:12px 0 0}
+.clfa-quick-links{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#aa9e8a}
+.clfa-quick-link{background:#c9bba6;padding:22px 18px;min-height:106px;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink)!important}
+.clfa-quick-link strong{font-size:13px}
+.clfa-quick-link small{font:9px "DM Mono";color:#716d63;text-transform:uppercase;letter-spacing:.08em;margin-top:14px}
+body.clfa-portal .clfa-home-wrap{padding-bottom:0}
+.clfa-home-bottom-pad{height:110px}
+
+/* ============================================================
+   Directory — member register
+   ============================================================ */
+.clfa-toolbar{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:42px 0 27px;margin-bottom:36px;flex-wrap:wrap}
+.clfa-searchbox{display:flex;align-items:center;gap:11px;background:#f6f1e8;border:1px solid #c8bca9;padding:0 15px;flex:1;max-width:520px;min-width:220px}
+.clfa-searchbox input{border:0;background:none;outline:0;width:100%;font:13px Manrope,sans-serif;color:var(--ink);padding:13px 0}
+.clfa-filter select{appearance:none;border:1px solid #c8bca9;background:#f6f1e8 url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b95e48' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;color:#46504f;padding:13px 38px 13px 14px;font:11px Manrope,sans-serif;min-width:143px;outline:none;border-radius:0}
+.clfa-filterbtn{border:1px solid var(--ink);background:none;color:var(--ink);padding:12px 16px;font:700 10px Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.clfa-filterbtn:hover{background:var(--ink);color:var(--paper)}
+.clfa-results-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.clfa-results-line h2{font-size:19px;margin:0;letter-spacing:-.04em}
+.clfa-results-line span{font:10px "DM Mono";color:#7a7a70}
+.clfa-member-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.clfa-member-card{min-height:255px;padding:20px 19px 18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;transition:background .2s,transform .2s;color:var(--ink)!important}
+.clfa-member-card:hover{background:#e6ddcf;transform:translateY(-3px)}
+.clfa-member-card .clfa-avatar{margin-bottom:28px}
+.clfa-card-year{font:10px "DM Mono";color:var(--rust);letter-spacing:.08em;text-transform:uppercase}
+.clfa-member-card h3{font-size:18px;letter-spacing:-.05em;margin:7px 0;font-weight:700}
+.clfa-member-role{font-size:12px;line-height:1.5;color:#5f6864;margin:0}
+.clfa-member-company{font-size:12px;font-weight:700;color:#394642;margin:2px 0 0}
+.clfa-card-bottom{margin-top:auto;padding-top:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.clfa-member-city{font:9px "DM Mono";color:#85867d}
+.clfa-view-profile{color:var(--rust);font-size:11px}
+.clfa-empty-state{grid-column:1/-1;text-align:center;padding:70px;border:1px solid var(--line);color:#69716d}
+.clfa-empty-state p{font-family:"Playfair Display",serif;font-style:italic;font-size:22px;margin:0 0 12px}
+
+/* ============================================================
+   Member profile (single, as seen by others)
+   ============================================================ */
+.clfa-back{display:inline-flex;align-items:center;gap:8px;color:var(--rust)!important;font:10px "DM Mono";letter-spacing:.08em;text-transform:uppercase;margin:47px 0}
+.clfa-profile-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:72px;padding-top:53px}
+.clfa-identity{display:flex;gap:25px;align-items:flex-start;padding-bottom:37px;border-bottom:1px solid var(--line)}
+.clfa-identity h2{font-size:27px;letter-spacing:-.07em;margin:2px 0 9px}
+.clfa-identity p{font-size:13px;color:#5f6764;margin:0 0 5px}
+.clfa-identity .clfa-class{font:10px "DM Mono";color:var(--rust);letter-spacing:.09em;text-transform:uppercase;margin-top:15px}
+.clfa-bio-block{padding:35px 0 0}
+.clfa-bio-block h3,.clfa-profile-side h3{font-size:18px;letter-spacing:-.045em;margin:0 0 17px}
+.clfa-bio-block .clfa-bio{font-family:"Playfair Display",serif;font-size:22px;line-height:1.38;max-width:580px;margin:0;color:#344550}
+.clfa-bio-block .clfa-bio p{margin:0 0 14px}
+.clfa-detail-list{border-top:1px solid var(--line);margin-top:36px}
+.clfa-detail{display:grid;grid-template-columns:125px 1fr;gap:15px;padding:17px 0;border-bottom:1px solid var(--line);font-size:12px}
+.clfa-detail label{font:9px "DM Mono";letter-spacing:.11em;text-transform:uppercase;color:#8a8278}
+.clfa-detail strong{font-weight:600}
+.clfa-contact-card{background:var(--sand);padding:28px 27px;margin-bottom:26px}
+.clfa-contact-card h3{margin-top:12px}
+.clfa-contact-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #c4b6a2;font-size:12px;color:var(--ink)!important}
+.clfa-contact-row:hover strong{color:var(--rust)}
+.clfa-contact-row span{margin-left:auto;font:9px "DM Mono";color:#81796d;text-transform:uppercase}
+.clfa-message-btn{width:100%;background:var(--ink);color:#f1ede5!important;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font:700 10px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.1em;margin-top:15px;border:0;cursor:pointer}
+.clfa-mentor-card{border:1px solid var(--line);padding:27px}
+.clfa-mentor-card p{font-size:12px;line-height:1.65;color:var(--muted);margin:12px 0 20px}
+.clfa-mentor-status{display:flex;align-items:center;gap:8px;color:#58705e;font:10px "DM Mono";text-transform:uppercase;letter-spacing:.08em}
+.clfa-member-opps{border-top:1px solid var(--line);margin-top:67px;padding-top:29px}
+.clfa-member-opps-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:19px}
+.clfa-member-opps-head h2{font-size:29px;letter-spacing:-.07em;margin:0}
+.clfa-member-opps-head span{font:10px "DM Mono";color:var(--rust);text-transform:uppercase;letter-spacing:.1em}
+.clfa-member-opp{display:grid;grid-template-columns:1fr auto;gap:30px;padding:24px 0;border-top:1px solid var(--line)}
+.clfa-member-opp h3{font-size:18px;letter-spacing:-.04em;margin:10px 0 8px}
+.clfa-member-opp p{font-size:12px;color:var(--muted);margin:0;line-height:1.6}
+.clfa-member-opp a{align-self:center}
+
+/* ============================================================
+   Events — invitations
+   ============================================================ */
+.clfa-events-toolbar{display:flex;align-items:center;justify-content:space-between;padding:24px 0 15px}
+.clfa-tabs{display:flex;gap:21px}
+.clfa-tabs a{font-size:12px;color:#777872;padding-bottom:8px;border-bottom:1px solid transparent}
+.clfa-tabs a.is-selected{color:var(--ink);border-color:var(--rust);font-weight:700}
+.clfa-events-count{font:10px "DM Mono";color:#777872}
+.clfa-event-list{border-top:1px solid var(--line)}
+.clfa-event-card{display:grid;grid-template-columns:92px minmax(240px,1.35fr) minmax(180px,1fr) 220px;gap:25px;padding:28px 0;border-bottom:1px solid var(--line)}
+.clfa-event-date{border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start}
+.clfa-event-date small{font:10px "DM Mono";letter-spacing:.12em;color:var(--rust);text-transform:uppercase}
+.clfa-event-date strong{font-size:49px;line-height:.94;letter-spacing:-.08em;margin:8px 0 6px;font-weight:700}
+.clfa-event-date span{font:10px "DM Mono";color:#7a7b75}
+.clfa-event-type{font:10px "DM Mono";color:var(--rust);text-transform:uppercase;letter-spacing:.12em}
+.clfa-event-card h2{font-size:26px;letter-spacing:-.06em;margin:10px 0 18px;font-weight:700}
+.clfa-event-meta{display:flex;flex-direction:column;gap:8px;color:#626763;font-size:12px}
+.clfa-venue{color:var(--ink)!important;border-bottom:1px solid #aaa095}
+.clfa-venue:hover{color:var(--rust)!important}
+.clfa-attendees-col{border-left:1px solid var(--line);padding-left:24px}
+.clfa-attendees-col>p{font:10px "DM Mono";text-transform:uppercase;letter-spacing:.09em;color:#777872;margin:0 0 13px}
+.clfa-people{display:flex;align-items:center}
+.clfa-people .clfa-avatar-xs{margin-left:-5px}
+.clfa-people .clfa-avatar-xs:first-child{margin-left:0}
+.clfa-people-more{font:10px "DM Mono";margin-left:9px;color:#72746f}
+.clfa-going-line{font:11px/1.5 "DM Mono";color:#74766f;margin-top:12px}
+.clfa-going-line b{color:var(--ink);font-weight:500}
+.clfa-respond{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:11px}
+.clfa-status{font:10px "DM Mono";letter-spacing:.08em;text-transform:uppercase}
+.clfa-status.is-going{color:#55705e}
+.clfa-status.is-awaiting{color:var(--rust)}
+.clfa-status.is-declined{color:#797b77}
+.clfa-rsvp-btn{background:var(--rust);color:#fff!important;padding:12px 15px;display:inline-flex;align-items:center;gap:21px;text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:700;border:0;cursor:pointer}
+.clfa-rsvp-btn:hover{background:#a84f3c}
+.clfa-past{margin-top:92px}
+.clfa-past-head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--line);padding-bottom:22px}
+.clfa-past-head h2{font-size:34px;letter-spacing:-.07em;margin:12px 0 0}
+.clfa-past-head a{font-size:11px;text-decoration:underline;text-underline-offset:4px;color:var(--ink)!important}
+.clfa-past-list{display:grid;grid-template-columns:repeat(3,1fr)}
+.clfa-past-item{padding:24px 25px 22px 0;border-bottom:1px solid var(--line);border-right:1px solid var(--line);margin-right:25px}
+.clfa-past-item:nth-child(3n){border-right:0;margin-right:0}
+.clfa-past-item small{font:10px "DM Mono";color:var(--rust);letter-spacing:.12em;text-transform:uppercase}
+.clfa-past-item h3{font-size:16px;margin:17px 0 9px;letter-spacing:-.03em}
+.clfa-past-item p{font-size:11px;color:#73756e;margin:0}
+
+/* Single event */
+.clfa-event-single .clfa-eventmap{margin:22px 0}
+.clfa-event-single .clfa-eventmap iframe{width:100%;height:280px;border:0}
+.clfa-event-body{font-size:14px;line-height:1.75;color:#3d4750;max-width:620px;margin:22px 0}
+.clfa-calrow{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 6px}
+.clfa-rsvpbox{max-width:640px;margin-top:26px;border:1px solid var(--line);padding:27px}
+.clfa-yesno{display:flex;gap:26px;margin-bottom:18px}
+.clfa-attendees{margin-top:40px}
+.clfa-attendlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.clfa-attendee{display:flex;align-items:center;gap:12px}
+.clfa-attendname{font-weight:600;font-size:14px}
+
+/* ============================================================
+   Opportunities — the board
+   ============================================================ */
+.clfa-board-toolbar{display:flex;align-items:center;justify-content:space-between;padding:25px 0 18px;gap:20px;flex-wrap:wrap}
+.clfa-filter-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.clfa-filter-tab{padding:9px 13px;border:1px solid #c9c0b1;color:#69716d;font-size:11px}
+.clfa-filter-tab:hover,.clfa-filter-tab.is-active{background:var(--ink);border-color:var(--ink);color:#f1eadf!important}
+.clfa-board-tools{display:flex;gap:11px;align-items:center}
+.clfa-board-search{display:flex;gap:8px;align-items:center;border-bottom:1px solid #aaa89d;padding:5px 1px;color:#7d817d}
+.clfa-board-search input{width:140px;outline:0;font:11px Manrope,sans-serif;color:var(--ink);border:0;background:none}
+.clfa-board-note{display:flex;align-items:center;gap:10px;background:#e6ddce;border-left:3px solid var(--rust);padding:13px 16px;font-size:11px;color:#616762;margin:4px 0 26px}
+.clfa-board-note b{color:var(--ink)}
+.clfa-board-list{border-top:1px solid var(--ink)}
+.clfa-opp-card{display:grid;grid-template-columns:155px minmax(0,1fr) 165px;gap:28px;padding:27px 0 28px;border-bottom:1px solid var(--line)}
+.clfa-opp-card:hover{background:rgba(224,212,194,.22)}
+.clfa-opp-kind{font:10px "DM Mono";letter-spacing:.08em;text-transform:uppercase;padding-top:3px}
+.clfa-opp-kind.is-job{color:#a9533f}
+.clfa-opp-kind.is-business{color:#44677a}
+.clfa-opp-kind.is-looking{color:#a27839}
+.clfa-opp-main h2{font-size:20px;line-height:1.15;letter-spacing:-.04em;margin:0 0 10px;font-weight:700}
+.clfa-opp-main .clfa-opp-body{font-size:13px;line-height:1.6;color:#626a68;margin:0;max-width:600px}
+.clfa-opp-body p{margin:0 0 8px}
+.clfa-opp-body p:last-child{margin:0}
+.clfa-opp-by{display:flex;align-items:center;gap:10px;margin-top:19px}
+.clfa-opp-by .clfa-avatar{width:27px;height:27px;font-size:10px}
+.clfa-opp-by strong{font-size:11px;display:block}
+.clfa-opp-by small{font:10px "DM Mono";color:#858881}
+.clfa-opp-action{display:flex;flex-direction:column;align-items:flex-end;gap:14px;text-align:right}
+.clfa-opp-action .clfa-textlink{justify-content:flex-end;text-align:right}
+.clfa-opp-date,.clfa-opp-expiry{font:10px "DM Mono";color:#858881}
+.clfa-oppclose{color:#a94d3b!important;font-size:10px}
+.clfa-board-footer{margin-top:67px;background:var(--ink);color:#ebe4d7;padding:29px 31px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.clfa-board-footer strong{font-size:12px}
+.clfa-board-footer small{display:block;color:#aeb3b0;font-size:11px;margin-top:4px}
+.clfa-digest-btn{border:1px solid #89939a;padding:11px 14px;color:#eee6d8!important;font-size:10px;text-transform:uppercase;letter-spacing:.09em}
+.clfa-digest-btn.is-on{background:#d48b72;border-color:#d48b72;color:#172638!important}
+.clfa-post-section{margin-top:70px}
+.clfa-post-section h2{font-size:34px;letter-spacing:-.07em;margin:12px 0 26px}
+.clfa-post-section h2 em{font:italic 600 .94em "Playfair Display",serif;color:var(--rust)}
+
+/* ============================================================
+   Forms (profile editor, board post, RSVP, login)
+   ============================================================ */
 .clfa-form{max-width:640px}
 .clfa-section{color:var(--rust);font:10px "DM Mono";letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid #c8bdab;padding-bottom:10px;margin:36px 0 20px}
 .clfa-field{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
 .clfa-field>span{color:#5d635e;font-size:12px}
-.clfa-field input,.clfa-field textarea,.clfa-field select,.clfa-filters input,.clfa-filters select,.clfa-login input[type=text],.clfa-login input[type=password]{width:100%;border:1px solid #c8bdab;border-radius:0;background:#f3eee5;color:var(--ink);padding:12px 13px;font:13px Manrope,sans-serif;outline:none;transition:border-color .2s,background .2s}
-.clfa-field input:focus,.clfa-field textarea:focus,.clfa-field select:focus,.clfa-filters input:focus,.clfa-filters select:focus,.clfa-login input:focus{border-color:var(--rust);background:#f7f1e8}
+.clfa-field input,.clfa-field textarea,.clfa-field select,.clfa-login input[type=text],.clfa-login input[type=password]{width:100%;border:1px solid #c8bdab;border-radius:0;background:#f6f1e8;color:var(--ink);padding:12px 13px;font:13px Manrope,sans-serif;outline:none;transition:border-color .2s,background .2s}
+.clfa-field input:focus,.clfa-field textarea:focus,.clfa-field select:focus,.clfa-login input:focus{border-color:var(--rust);background:#f7f1e8}
 .clfa-field textarea{resize:vertical;line-height:1.55;min-height:110px}
 .clfa-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .clfa-check{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-bottom:10px;cursor:pointer}
 .clfa-check input{accent-color:var(--rust);margin-top:2px}
 .clfa-actions{display:flex;align-items:center;gap:24px;border-top:1px solid #c8bdab;margin-top:38px;padding-top:22px}
 .clfa-photorow{display:flex;gap:22px;align-items:center;margin-bottom:8px}
-.clfa-photorow .clfa-photo{width:84px;height:84px}
+.clfa-photorow .clfa-avatar{width:84px;height:84px;font-size:20px}
 
-/* ---- Photos ---- */
-.clfa-photo{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#d8cbb5}
-.clfa-initials{display:flex;align-items:center;justify-content:center;font:600 26px "Playfair Display",serif;color:var(--rust)}
+/* Legacy photo blocks (RSVP page, mentors) */
+.clfa-photo{width:44px;height:44px;aspect-ratio:1;object-fit:cover;display:block;background:#d8cbb5;border-radius:50%}
+.clfa-initials{display:flex;align-items:center;justify-content:center;font:600 16px "Playfair Display",serif;color:var(--rust)}
+.clfa-attendee .clfa-photo{width:44px;height:44px;flex:none}
 
 /* ---- Login ---- */
 .clfa-login{display:flex;justify-content:center;padding:40px 0 80px}
-.clfa-login .clfa-card{background:#f3eee5;border:1px solid #d6cebf;padding:44px 42px;max-width:430px;width:100%}
+.clfa-login .clfa-card{background:#f6f1e8;border:1px solid #d6cebf;padding:44px 42px;max-width:430px;width:100%}
 .clfa-login h2{font-size:34px;letter-spacing:-.05em;margin:0 0 12px}
 .clfa-login form p{margin:0 0 16px}
 .clfa-login label{display:block;color:#5d635e;font-size:12px;margin-bottom:6px}
 .clfa-login .login-remember label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink)}
 .clfa-login input[type=checkbox]{accent-color:var(--rust)}
 .clfa-login input[type=submit]{background:var(--rust);color:#fff;border:0;padding:14px 18px;font:700 11px Manrope,sans-serif;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;width:100%}
-.clfa-login input[type=submit]:hover{background:#c26b55}
+.clfa-login input[type=submit]:hover{background:#a84f3c}
 
-/* ---- Directory ---- */
-.clfa-dirhead{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:34px;flex-wrap:wrap}
-.clfa-dirlinks{display:flex;gap:20px;align-items:center}
-.clfa-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#e7dcc9;padding:16px;margin-bottom:26px}
-.clfa-filters input[type=search]{flex:2;min-width:200px;width:auto}
-.clfa-filters select{flex:1;min-width:160px;width:auto}
-.clfa-count{font:10px "DM Mono";letter-spacing:.12em;text-transform:uppercase;color:#77766e;margin:0 0 14px}
-.clfa-empty{padding:40px 0}
-.clfa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:#c8bdab}
-.clfa-cardlink{display:block}
-.clfa-membercard{background:var(--paper);padding:20px;min-height:120px;display:flex;gap:16px;align-items:flex-start;transition:background .2s}
-.clfa-cardlink:hover .clfa-membercard{background:#f3eee5}
-.clfa-membercard .clfa-photo{width:64px;height:64px;flex:none}
-.clfa-cardbody h3{font-size:17px;letter-spacing:-.03em;margin:0 0 6px}
-.clfa-cardbody p{font-size:13px;color:#62645f;margin:8px 0 4px;line-height:1.5}
-.clfa-cardbody small{font:10px "DM Mono";color:#8a8377}
+/* ---- Mentorship (kept classes) ---- */
+.clfa-mentortoggle strong{font-weight:700}
+.clfa-mentorfields{margin:14px 0 6px;padding-left:26px;border-left:2px solid #c8bdab}
+.clfa-fieldlabel{display:block;font:11px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:var(--rust);margin:16px 0 8px}
+.clfa-checkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 18px;margin-bottom:14px}
+.clfa-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .clfa-badge{display:inline-block;font:10px "DM Mono";letter-spacing:.08em;text-transform:uppercase;background:#d7cab4;color:var(--ink);padding:4px 8px}
-
-/* ---- Single member ---- */
-.clfa-single{padding-top:10px}
-.clfa-singlegrid{display:grid;grid-template-columns:280px 1fr;gap:clamp(28px,5vw,64px);margin-top:26px;align-items:start}
-.clfa-singlephoto .clfa-photo{width:100%;height:auto;aspect-ratio:1}
-.clfa-work{font-size:16px;margin:14px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.clfa-bio{margin:22px 0;max-width:560px;font-size:15px;line-height:1.75;color:#3d4750}
-.clfa-contact{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-top:1px solid #c8bdab;margin-top:26px;padding-top:22px}
-
-/* ---- Events ---- */
-.clfa-eventlist{display:grid;gap:1px;background:#c8bdab}
-.clfa-eventcard{background:var(--paper);padding:22px;display:flex;gap:22px;align-items:flex-start;transition:background .2s}
-.clfa-cardlink:hover .clfa-eventcard{background:#f3eee5}
+.clfa-badge-yes{background:#ccd8c6;color:#2c4a30}
+.clfa-badge-open{background:var(--rust);color:#fff}
+.clfa-badge-job{background:#182a3d;color:#f1ede5}
+.clfa-badge-business{background:var(--rust);color:#fff}
+.clfa-badge-looking{background:#d5c7ad;color:#4c4a41}
+.clfa-mentornote{font:italic 19px "Playfair Display",serif;line-height:1.5;margin:16px 0;max-width:560px}
+.clfa-interestform{max-width:640px;margin-top:24px}
+.clfa-mentor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:#c8bdab;margin-top:26px}
+.clfa-mentor-cell{background:var(--paper);padding:20px;display:flex;gap:16px;align-items:flex-start;transition:background .2s;color:var(--ink)!important}
+.clfa-mentor-cell:hover{background:#f6f1e8}
+.clfa-cardlink{display:block;color:inherit!important}
+.clfa-card{background:var(--paper)}
+.clfa-cardbody h3{font-size:17px;letter-spacing:-.03em;margin:0 0 6px}
+.clfa-cardbody p,.clfa-cardmeta{font-size:13px;color:#62645f;margin:8px 0 4px;line-height:1.5}
+.clfa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:#c8bdab}
+.clfa-membercard{background:var(--paper);padding:20px;display:flex;gap:16px;align-items:flex-start}
+.clfa-eventcard{background:var(--paper);padding:22px;display:flex;gap:22px;align-items:flex-start}
 .clfa-eventdate{flex:none;width:74px;text-align:center;background:var(--ink);color:var(--paper);padding:12px 6px}
 .clfa-eventdate strong{display:block;font-size:28px;letter-spacing:-.04em;line-height:1}
 .clfa-eventdate span{font:9px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#d4a492}
-.clfa-badge-yes{background:#ccd8c6;color:#2c4a30}
-.clfa-badge-open{background:var(--rust);color:#fff}
-.clfa-calrow{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 6px}
-.clfa-rsvpbox{max-width:640px;margin-top:26px}
-.clfa-yesno{display:flex;gap:26px;margin-bottom:18px}
-.clfa-rsvpform .clfa-check{font-size:14px}
+.clfa-empty{padding:40px 0}
+.clfa-count{font:10px "DM Mono";letter-spacing:.12em;text-transform:uppercase;color:#77766e;margin:0 0 14px}
 
-/* ---- Mentorship ---- */
-.clfa-mentortoggle strong{font-weight:700}
-.clfa-mentorfields{margin:14px 0 6px;padding-left:26px;border-left:2px solid #c8bdab}
-.clfa-fieldlabel{display:block;font:11px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#a94d3b;margin:16px 0 8px}
-.clfa-checkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 18px;margin-bottom:14px}
-.clfa-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.clfa-mentornote{font:italic 19px "Playfair Display";line-height:1.5;margin:16px 0;max-width:560px}
-.clfa-interestform{max-width:640px;margin-top:24px}
-.clfa-single{display:flex;gap:34px;align-items:flex-start;margin-top:26px}
-.clfa-singlephoto .clfa-photo{width:150px;height:150px;object-fit:cover}
-
-/* ---- Opportunities board ---- */
-.clfa-typetabs{gap:0;border:1px solid #c8bdab;display:inline-flex;margin:22px 0}
-.clfa-tab{padding:11px 18px;font:11px "DM Mono";letter-spacing:.1em;text-transform:uppercase;border-right:1px solid #c8bdab}
-.clfa-tab:last-child{border-right:0}
-.clfa-tab.is-active{background:var(--ink);color:var(--paper)}
-.clfa-opplist{display:grid;gap:1px;background:#c8bdab;margin-bottom:44px}
-.clfa-oppcard{background:var(--paper);padding:24px}
-.clfa-opphead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.clfa-oppdate{font:10px "DM Mono";letter-spacing:.1em;color:#8a877e}
-.clfa-oppcard h3{font-size:21px;letter-spacing:-.03em;margin-bottom:8px}
-.clfa-oppbody{font-size:15px;line-height:1.65;color:#56606a;max-width:640px}
-.clfa-oppmeta{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:12px;color:#62645f;align-items:center}
-.clfa-badge-job{background:var(--ink);color:var(--paper)}
-.clfa-badge-business{background:var(--rust);color:#fff}
-.clfa-badge-looking{background:#d5c7ad;color:#4c4a41}
-.clfa-oppform{max-width:640px}
-.clfa-oppclose{color:#a94d3b!important}
-
-/* ---- Member home ---- */
-.clfa-home .clfa-title{font-size:clamp(32px,4vw,52px)}
-.clfa-announcements{display:grid;gap:1px;background:#c8bdab;margin-bottom:8px}
-.clfa-announcement{background:#f3eee5;border-left:3px solid var(--rust);padding:20px 24px}
-.clfa-anndate{font:10px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#8a877e;margin:0 0 6px}
-.clfa-announcement h3{font-size:19px;letter-spacing:-.03em;margin:0 0 6px}
-.clfa-annbody{font-size:14px;line-height:1.65;color:#56606a;max-width:640px}
-.clfa-annbody p{margin:0 0 8px}
-.clfa-homegrid{display:grid;grid-template-columns:1.6fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
-.clfa-homemore{margin:14px 0 0}
-.clfa-homeopps{display:grid;gap:1px;background:#c8bdab}
-.clfa-homeopp{display:flex;gap:14px;align-items:center;background:var(--paper);padding:14px 16px;transition:background .2s}
-.clfa-homeopp:hover{background:#f3eee5}
-.clfa-homeopptitle{font-weight:600;font-size:14px;flex:1;min-width:0}
-.clfa-homeoppmeta{font:10px "DM Mono";letter-spacing:.08em;color:#8a877e;white-space:nowrap}
-.clfa-newmembers{grid-template-columns:1fr;gap:12px}
-.clfa-newmember{display:flex;align-items:center;gap:12px}
-.clfa-newmember .clfa-attendname{display:flex;flex-direction:column;gap:2px}
-
-/* ---- Responsive ---- */
-@media(max-width:720px){
-  .clfa-dirhead{display:block}
-  .clfa-dirlinks{margin-top:18px}
-  .clfa-row{grid-template-columns:1fr}
-  .clfa-singlegrid{grid-template-columns:1fr}
-  .clfa-singlephoto{max-width:220px}
-  .clfa-filters input[type=search],.clfa-filters select{flex:1 1 100%}
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media(max-width:980px){
+  .clfa-member-grid{grid-template-columns:repeat(3,1fr)}
+  .clfa-event-card{grid-template-columns:78px 1fr 190px}
+  .clfa-attendees-col{grid-column:2;border-left:0;padding-left:0}
+  .clfa-respond{grid-column:3;grid-row:1/3}
+  .clfa-profile-grid{gap:44px}
 }
-
-/* Who's coming (event attendee list) */
-.clfa-attendlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.clfa-attendee{display:flex;align-items:center;gap:12px}
-.clfa-attendee .clfa-photo{width:44px;height:44px;flex:none;border-radius:50%}
-.clfa-attendname{font-weight:600;font-size:14px}
+@media(max-width:760px){
+  .clfa-subnav{height:53px;padding:0 22px;gap:14px}
+  .clfa-subnav-label{display:none}
+  .clfa-subnav-nav{gap:19px;width:100%}
+  .clfa-hero{padding:48px 22px 0}
+  .clfa-hero-inner{display:block;padding-bottom:38px}
+  .clfa-hero h1{font-size:64px}
+  .clfa-hero-copy{margin-top:28px;max-width:none}
+  .clfa-wrap{padding:0 22px 80px}
+  .clfa-home-grid{display:block;padding-top:40px}
+  .clfa-home-side{margin-top:53px}
+  .clfa-announcement{grid-template-columns:1fr;gap:9px}
+  .clfa-announcement h3{font-size:20px}
+  .clfa-home-event{grid-template-columns:56px 1fr;gap:14px}
+  .clfa-home-event .clfa-rsvp-chip{grid-column:2;justify-self:start}
+  .clfa-quick{padding:32px 22px;margin-top:56px}
+  .clfa-quick-inner{display:block}
+  .clfa-quick-links{margin-top:28px;grid-template-columns:1fr 1fr}
+  .clfa-quick-link:last-child{grid-column:span 2}
+  .clfa-toolbar{display:grid;grid-template-columns:1fr 1fr;padding-top:29px}
+  .clfa-searchbox{grid-column:1/-1;max-width:none}
+  .clfa-filter select{width:100%;min-width:0}
+  .clfa-member-grid{grid-template-columns:1fr 1fr}
+  .clfa-member-card{min-height:245px;padding:16px}
+  .clfa-member-card .clfa-avatar{margin-bottom:20px}
+  .clfa-member-card h3{font-size:16px}
+  .clfa-events-toolbar{align-items:flex-start;gap:15px;flex-direction:column}
+  .clfa-tabs{gap:14px}
+  .clfa-event-card{grid-template-columns:60px 1fr;gap:17px 15px;padding:24px 0}
+  .clfa-event-date{border-right:0}
+  .clfa-event-date strong{font-size:38px}
+  .clfa-event-card h2{font-size:22px;margin-top:8px}
+  .clfa-attendees-col{grid-column:2}
+  .clfa-respond{grid-column:2;grid-row:auto;padding-top:5px;border-top:1px solid var(--line);align-items:flex-start;width:100%}
+  .clfa-past{margin-top:65px}
+  .clfa-past-list{display:block}
+  .clfa-past-item{border-right:0;margin:0}
+  .clfa-profile-grid{display:block;padding-top:38px}
+  .clfa-profile-side{margin-top:45px}
+  .clfa-identity{gap:17px}
+  .clfa-avatar-lg{width:84px;height:84px;font-size:21px}
+  .clfa-identity h2{font-size:22px}
+  .clfa-bio-block .clfa-bio{font-size:20px}
+  .clfa-detail{grid-template-columns:105px 1fr}
+  .clfa-member-opps{margin-top:53px}
+  .clfa-member-opp{display:block}
+  .clfa-member-opp a{margin-top:19px;display:inline-flex}
+  .clfa-board-toolbar{display:block}
+  .clfa-board-tools{margin-top:16px;justify-content:space-between}
+  .clfa-board-search{flex:1}
+  .clfa-board-search input{width:100%}
+  .clfa-opp-card{grid-template-columns:1fr;gap:12px;padding:24px 0}
+  .clfa-opp-action{align-items:flex-start;flex-direction:row;justify-content:space-between;margin-top:3px;text-align:left}
+  .clfa-board-footer{display:block;padding:23px}
+  .clfa-digest-btn{margin-top:20px;display:inline-block}
+  .clfa-row{grid-template-columns:1fr}
+  .clfa-back{margin:39px 0}
+}
+@media(max-width:420px){.clfa-member-grid{grid-template-columns:1fr}}

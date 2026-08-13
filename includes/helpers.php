@@ -28,6 +28,7 @@ function clfa_profile_fields() {
 		'clfa_profession' => array( 'label' => __( 'Profession / role', 'clf-alumni' ),     'type' => 'text' ),
 		'clfa_company'    => array( 'label' => __( 'Company / organization', 'clf-alumni' ),'type' => 'text' ),
 		'clfa_industry'   => array( 'label' => __( 'Industry', 'clf-alumni' ),              'type' => 'select', 'options' => clfa_industries() ),
+		'clfa_city'       => array( 'label' => __( 'City / where you\'re based (e.g. Myers Park, Charlotte)', 'clf-alumni' ), 'type' => 'text' ),
 		'clfa_bio'        => array( 'label' => __( 'About you (bio)', 'clf-alumni' ),       'type' => 'textarea' ),
 		'clfa_phone'      => array( 'label' => __( 'Phone', 'clf-alumni' ),                 'type' => 'text', 'private_toggle' => 'clfa_show_phone' ),
 		'clfa_linkedin'   => array( 'label' => __( 'LinkedIn URL', 'clf-alumni' ),          'type' => 'url' ),

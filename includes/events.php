@@ -40,8 +40,11 @@ function clfa_event_details_box( $post ) {
 	$capacity = get_post_meta( $post->ID, 'clfa_capacity', true );
 	$deadline = get_post_meta( $post->ID, 'clfa_deadline', true );
 	$hide     = get_post_meta( $post->ID, 'clfa_hide_attendees', true );
+	$etype    = get_post_meta( $post->ID, 'clfa_event_type', true );
 	?>
 	<table class="form-table">
+	  <tr><th><label><?php esc_html_e( 'Event type label', 'clf-alumni' ); ?></label></th>
+	    <td><input type="text" name="clfa_event_type" class="regular-text" value="<?php echo esc_attr( $etype ); ?>" placeholder="<?php esc_attr_e( 'e.g. Dinner forum, Golf outing, Roundtable', 'clf-alumni' ); ?>"> <span class="description"><?php esc_html_e( 'Optional — shown above the event title in the members area.', 'clf-alumni' ); ?></span></td></tr>
 	  <tr><th><label><?php esc_html_e( 'Starts', 'clf-alumni' ); ?> *</label></th>
 	    <td><input type="datetime-local" name="clfa_start" value="<?php echo esc_attr( $start ); ?>" required></td></tr>
 	  <tr><th><label><?php esc_html_e( 'Ends', 'clf-alumni' ); ?></label></th>
@@ -88,7 +91,7 @@ function clfa_save_event_meta( $post_id ) {
 	if ( ! current_user_can( 'edit_post', $post_id ) || wp_is_post_revision( $post_id ) ) {
 		return;
 	}
-	foreach ( array( 'clfa_start', 'clfa_end', 'clfa_location', 'clfa_address', 'clfa_capacity', 'clfa_deadline' ) as $key ) {
+	foreach ( array( 'clfa_start', 'clfa_end', 'clfa_location', 'clfa_address', 'clfa_capacity', 'clfa_deadline', 'clfa_event_type' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		}
@@ -229,48 +232,144 @@ function clfa_events_shortcode() {
 	}
 	$events = get_posts( array(
 		'post_type'      => 'clfa_event',
-		'posts_per_page' => 50,
+		'posts_per_page' => -1,
 		'meta_key'       => 'clfa_start',
 		'orderby'        => 'meta_value',
 		'order'          => 'ASC',
 	) );
 	$now      = time();
-	$upcoming = array_filter( $events, function ( $e ) use ( $now ) {
+	$me       = get_current_user_id();
+	$upcoming = array_values( array_filter( $events, function ( $e ) use ( $now ) {
 		return clfa_event_end_ts( $e->ID ) >= $now;
-	} );
+	} ) );
+	$past     = array_reverse( array_values( array_filter( $events, function ( $e ) use ( $now ) {
+		return clfa_event_end_ts( $e->ID ) < $now && clfa_event_start_ts( $e->ID );
+	} ) ) );
 
-	ob_start(); ?>
+	$tab = sanitize_key( $_GET['tab'] ?? '' );
+	if ( 'invited' === $tab ) {
+		$upcoming = array_values( array_filter( $upcoming, fn( $e ) => (bool) clfa_get_rsvp( $e->ID, $me ) ) );
+	} elseif ( 'going' === $tab ) {
+		$upcoming = array_values( array_filter( $upcoming, function ( $e ) use ( $me ) {
+			$r = clfa_get_rsvp( $e->ID, $me );
+			return $r && 'yes' === $r->status;
+		} ) );
+	}
+	$show_archive = isset( $_GET['archive'] );
+	$past_show    = $show_archive ? $past : array_slice( $past, 0, 3 );
+
+	ob_start();
+	echo clfa_portal_nav( 'events' ); // phpcs:ignore
+	echo clfa_portal_hero( // phpcs:ignore
+		esc_html__( 'The year ahead', 'clf-alumni' ) . ' <span>· ' . esc_html( wp_date( 'Y' ) ) . '</span>',
+		esc_html__( 'Make room', 'clf-alumni' ) . '<br>' . esc_html__( 'for', 'clf-alumni' ) . ' <em>' . esc_html__( 'one another.', 'clf-alumni' ) . '</em>',
+		__( 'Dinners, roundtables, and gatherings for the Forum family. RSVP so we can hold your seat at the table.', 'clf-alumni' ),
+		array( sprintf( _n( '%d upcoming', '%d upcoming', count( $upcoming ), 'clf-alumni' ), count( $upcoming ) ) )
+	); ?>
 	<div class="clfa-wrap clfa-events">
-	  <div class="clfa-dirhead">
-	    <div>
-	      <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — events', 'clf-alumni' ); ?></p>
-	      <h2 class="clfa-title"><?php esc_html_e( 'Show', 'clf-alumni' ); ?> <em><?php esc_html_e( 'up.', 'clf-alumni' ); ?></em></h2>
+	  <div class="clfa-events-toolbar">
+	    <div class="clfa-tabs">
+	      <a class="<?php echo $tab ? '' : 'is-selected'; ?>" href="<?php echo esc_url( clfa_page_url( 'alumni-events' ) ); ?>"><?php esc_html_e( 'All upcoming', 'clf-alumni' ); ?></a>
+	      <a class="<?php echo 'invited' === $tab ? 'is-selected' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'tab', 'invited', clfa_page_url( 'alumni-events' ) ) ); ?>"><?php esc_html_e( 'My invitations', 'clf-alumni' ); ?></a>
+	      <a class="<?php echo 'going' === $tab ? 'is-selected' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'tab', 'going', clfa_page_url( 'alumni-events' ) ) ); ?>"><?php esc_html_e( "Going", 'clf-alumni' ); ?></a>
 	    </div>
-	    <div class="clfa-dirlinks"><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">&larr; <?php esc_html_e( 'Directory', 'clf-alumni' ); ?></a></div>
+	    <span class="clfa-events-count"><?php echo esc_html( sprintf( _n( '%d event', '%d events', count( $upcoming ), 'clf-alumni' ), count( $upcoming ) ) ); ?></span>
 	  </div>
+
+	  <div class="clfa-event-list">
 	  <?php if ( empty( $upcoming ) ) : ?>
-	    <p class="clfa-muted clfa-empty"><?php esc_html_e( 'No upcoming events yet — check back soon.', 'clf-alumni' ); ?></p>
+	    <p class="clfa-muted" style="padding:34px 0;"><?php esc_html_e( 'Nothing here yet — check back soon.', 'clf-alumni' ); ?></p>
 	  <?php else : ?>
-	    <div class="clfa-eventlist">
-	      <?php foreach ( $upcoming as $e ) :
-			$rsvp = clfa_get_rsvp( $e->ID, get_current_user_id() ); ?>
-	        <a class="clfa-cardlink" href="<?php echo esc_url( add_query_arg( 'event', $e->ID, clfa_page_url( 'alumni-events' ) ) ); ?>">
-	          <div class="clfa-card clfa-eventcard">
-	            <div class="clfa-eventdate">
-	              <strong><?php echo esc_html( wp_date( 'j', clfa_event_start_ts( $e->ID ) ) ); ?></strong>
-	              <span><?php echo esc_html( wp_date( 'M Y', clfa_event_start_ts( $e->ID ) ) ); ?></span>
-	            </div>
-	            <div class="clfa-cardbody">
-	              <h3><?php echo esc_html( $e->post_title ); ?></h3>
-	              <p><?php echo esc_html( clfa_event_when( $e->ID ) ); ?><?php $loc = get_post_meta( $e->ID, 'clfa_location', true ); echo $loc ? esc_html( ' — ' . $loc ) : ''; ?></p>
-	              <?php if ( $rsvp && 'yes' === $rsvp->status ) : ?><span class="clfa-badge clfa-badge-yes"><?php echo esc_html( sprintf( __( 'Going · %d', 'clf-alumni' ), (int) $rsvp->guests ) ); ?></span>
-	              <?php elseif ( $rsvp && 'no' === $rsvp->status ) : ?><span class="clfa-badge"><?php esc_html_e( 'Not going', 'clf-alumni' ); ?></span>
-	              <?php elseif ( $rsvp ) : ?><span class="clfa-badge clfa-badge-open"><?php esc_html_e( 'Please RSVP', 'clf-alumni' ); ?></span><?php endif; ?>
-	            </div>
+	    <?php foreach ( $upcoming as $e ) :
+			$ts    = clfa_event_start_ts( $e->ID );
+			$rsvp  = clfa_get_rsvp( $e->ID, $me );
+			$etype = get_post_meta( $e->ID, 'clfa_event_type', true );
+			$loc   = get_post_meta( $e->ID, 'clfa_location', true );
+			$addr  = get_post_meta( $e->ID, 'clfa_address', true );
+			$cap   = (int) get_post_meta( $e->ID, 'clfa_capacity', true );
+			$url   = add_query_arg( 'event', $e->ID, clfa_page_url( 'alumni-events' ) );
+			$hide  = get_post_meta( $e->ID, 'clfa_hide_attendees', true );
+			$going = $hide ? array() : clfa_event_attendees( $e->ID );
+			$total = 0;
+			foreach ( $going as $g ) {
+				$total += max( 1, (int) $g->guests );
+			} ?>
+	      <article class="clfa-event-card">
+	        <div class="clfa-event-date">
+	          <small><?php echo esc_html( wp_date( 'M', $ts ) ); ?></small>
+	          <strong><?php echo esc_html( wp_date( 'j', $ts ) ); ?></strong>
+	          <span><?php echo esc_html( wp_date( 'D', $ts ) ); ?></span>
+	        </div>
+	        <div>
+	          <?php if ( $etype ) : ?><span class="clfa-event-type"><?php echo esc_html( $etype ); ?></span><?php endif; ?>
+	          <h2><?php echo esc_html( $e->post_title ); ?></h2>
+	          <div class="clfa-event-meta">
+	            <span>🕐 <?php echo esc_html( wp_date( 'g:i a', $ts ) ); ?></span>
+	            <?php if ( $loc ) : ?>
+	              <span>📍 <a class="clfa-venue" href="<?php echo esc_url( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $addr ?: $loc ) ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $loc ); ?></a></span>
+	            <?php endif; ?>
 	          </div>
-	        </a>
-	      <?php endforeach; ?>
-	    </div>
+	        </div>
+	        <div class="clfa-attendees-col">
+	          <?php if ( $going ) : ?>
+	            <p><?php esc_html_e( "Who's coming", 'clf-alumni' ); ?></p>
+	            <div class="clfa-people">
+	              <?php foreach ( array_slice( $going, 0, 5 ) as $g ) {
+					echo clfa_avatar( (int) $g->user_id, 'clfa-avatar-xs' ); // phpcs:ignore
+	              } ?>
+	              <?php if ( count( $going ) > 5 ) : ?><span class="clfa-people-more">+<?php echo esc_html( count( $going ) - 5 ); ?></span><?php endif; ?>
+	            </div>
+	            <p class="clfa-going-line"><b><?php echo esc_html( sprintf( _n( '%d going', '%d going', $total, 'clf-alumni' ), $total ) ); ?></b><?php echo $cap ? esc_html( ' · ' . sprintf( __( 'capacity %d', 'clf-alumni' ), $cap ) ) : ''; ?></p>
+	          <?php elseif ( $hide ) : ?>
+	            <p class="clfa-going-line"><?php esc_html_e( 'Guest list kept private for this gathering.', 'clf-alumni' ); ?></p>
+	          <?php else : ?>
+	            <p class="clfa-going-line"><?php esc_html_e( 'Be the first to reply.', 'clf-alumni' ); ?></p>
+	          <?php endif; ?>
+	        </div>
+	        <div class="clfa-respond">
+	          <?php if ( $rsvp && 'yes' === $rsvp->status ) : ?>
+	            <span class="clfa-status is-going">● <?php echo esc_html( sprintf( __( "You're going · %d", 'clf-alumni' ), (int) $rsvp->guests ) ); ?></span>
+	            <a class="clfa-textlink" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Change response', 'clf-alumni' ); ?> →</a>
+	          <?php elseif ( $rsvp && 'no' === $rsvp->status ) : ?>
+	            <span class="clfa-status is-declined"><?php esc_html_e( 'You declined', 'clf-alumni' ); ?></span>
+	            <a class="clfa-textlink" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Change response', 'clf-alumni' ); ?> →</a>
+	          <?php elseif ( $rsvp ) : ?>
+	            <span class="clfa-status is-awaiting"><?php esc_html_e( 'Awaiting your reply', 'clf-alumni' ); ?></span>
+	            <a class="clfa-rsvp-btn" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'RSVP now', 'clf-alumni' ); ?> <span>→</span></a>
+	          <?php else : ?>
+	            <a class="clfa-textlink" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'View details', 'clf-alumni' ); ?> →</a>
+	          <?php endif; ?>
+	        </div>
+	      </article>
+	    <?php endforeach; ?>
+	  <?php endif; ?>
+	  </div>
+
+	  <?php if ( $past ) : ?>
+	    <section class="clfa-past">
+	      <div class="clfa-past-head">
+	        <div><span class="clfa-mono-label"><?php esc_html_e( 'Looking back', 'clf-alumni' ); ?></span><h2><?php esc_html_e( 'Past events', 'clf-alumni' ); ?></h2></div>
+	        <?php if ( count( $past ) > 3 ) : ?>
+	          <a href="<?php echo esc_url( $show_archive ? clfa_page_url( 'alumni-events' ) . '#past' : add_query_arg( 'archive', '1', clfa_page_url( 'alumni-events' ) ) . '#past' ); ?>" id="past"><?php echo $show_archive ? esc_html__( 'Show fewer', 'clf-alumni' ) : esc_html__( 'View full archive', 'clf-alumni' ); ?></a>
+	        <?php endif; ?>
+	      </div>
+	      <div class="clfa-past-list">
+	        <?php foreach ( $past_show as $e ) :
+				$ts   = clfa_event_start_ts( $e->ID );
+				$loc  = get_post_meta( $e->ID, 'clfa_location', true );
+				$rows = get_post_meta( $e->ID, 'clfa_hide_attendees', true ) ? array() : clfa_event_attendees( $e->ID );
+				$tot  = 0;
+				foreach ( $rows as $g ) {
+					$tot += max( 1, (int) $g->guests );
+				} ?>
+	          <div class="clfa-past-item">
+	            <small><?php echo esc_html( wp_date( 'M Y', $ts ) ); ?></small>
+	            <h3><?php echo esc_html( $e->post_title ); ?></h3>
+	            <p><?php echo esc_html( trim( ( $loc ? $loc : '' ) . ( $tot ? ( $loc ? ' · ' : '' ) . sprintf( __( '%d joined', 'clf-alumni' ), $tot ) : '' ) ) ); ?></p>
+	          </div>
+	        <?php endforeach; ?>
+	      </div>
+	    </section>
 	  <?php endif; ?>
 	</div>
 	<?php
@@ -317,11 +416,13 @@ function clfa_render_member_event( $event_id ) {
 	if ( 'clfa_event' !== get_post_type( $event_id ) ) {
 		return '<div class="clfa-wrap"><p class="clfa-muted">' . esc_html__( 'Event not found.', 'clf-alumni' ) . '</p></div>';
 	}
-	$rsvp = clfa_get_rsvp( $event_id, get_current_user_id() );
-	ob_start(); ?>
-	<div class="clfa-wrap clfa-eventsingle">
-	  <p><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-events' ) ); ?>">&larr; <?php esc_html_e( 'All events', 'clf-alumni' ); ?></a></p>
-	  <p class="clfa-kicker"><?php echo esc_html( clfa_event_when( $event_id ) ); ?></p>
+	$rsvp  = clfa_get_rsvp( $event_id, get_current_user_id() );
+	$etype = get_post_meta( $event_id, 'clfa_event_type', true );
+	ob_start();
+	echo clfa_portal_nav( 'events' ); // phpcs:ignore ?>
+	<div class="clfa-wrap clfa-eventsingle clfa-event-single">
+	  <a class="clfa-back" href="<?php echo esc_url( clfa_page_url( 'alumni-events' ) ); ?>">← <?php esc_html_e( 'All events', 'clf-alumni' ); ?></a>
+	  <p class="clfa-kicker"><?php echo esc_html( trim( ( $etype ? $etype . ' · ' : '' ) . clfa_event_when( $event_id ) ) ); ?></p>
 	  <h2 class="clfa-title"><?php echo esc_html( get_the_title( $event_id ) ); ?></h2>
 	  <?php
 	  $loc     = get_post_meta( $event_id, 'clfa_location', true );

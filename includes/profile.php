@@ -71,12 +71,14 @@ function clfa_profile_shortcode() {
 	$user_id = get_current_user_id();
 	$user    = wp_get_current_user();
 
-	ob_start(); ?>
-	<div class="clfa-wrap clfa-profile-edit">
-	  <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — your profile', 'clf-alumni' ); ?></p>
-	  <h2 class="clfa-title"><?php esc_html_e( 'This is', 'clf-alumni' ); ?> <em><?php esc_html_e( 'you.', 'clf-alumni' ); ?></em></h2>
-	  <p class="clfa-muted"><?php esc_html_e( 'Your profile is visible only to signed-in CLF alumni — never to the public. Use the checkboxes to choose what fellow alumni can see.', 'clf-alumni' ); ?></p>
-
+	ob_start();
+	echo clfa_portal_nav( 'profile' ); // phpcs:ignore
+	echo clfa_portal_hero( // phpcs:ignore
+		esc_html__( 'Your profile', 'clf-alumni' ) . ' <span>· ' . esc_html__( 'Members only', 'clf-alumni' ) . '</span>',
+		esc_html__( 'This is', 'clf-alumni' ) . ' <em>' . esc_html__( 'you.', 'clf-alumni' ) . '</em>',
+		__( 'Visible only to signed-in CLF alumni — never to the public. Use the checkboxes to choose what fellow alumni can see.', 'clf-alumni' )
+	); ?>
+	<div class="clfa-wrap clfa-profile-edit" style="padding-top:44px;">
 	  <?php if ( isset( $_GET['saved'] ) ) : ?>
 	    <p class="clfa-success"><?php esc_html_e( 'Profile saved.', 'clf-alumni' ); ?></p>
 	  <?php endif; ?>

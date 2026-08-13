@@ -448,7 +448,7 @@ function clfa_render_member_event( $event_id ) {
 	  if ( $rsvp ) {
 			echo clfa_rsvp_form_html( $rsvp, clfa_page_url( 'alumni-events' ) . '?event=' . $event_id ); // phpcs:ignore
 	  } else {
-			echo '<p class="clfa-muted">' . esc_html__( 'This event is invitation-based and you are not on the invite list. Reach out to CLF if you think that\'s a mistake.', 'clf-alumni' ) . '</p>';
+			echo '<div class="clfa-notice-warn"><strong>' . esc_html__( 'Invitation only', 'clf-alumni' ) . '</strong>' . esc_html__( 'This event is invitation-based and you are not on the invite list. Reach out to CLF if you think that\'s a mistake.', 'clf-alumni' ) . '</div>';
 	  }
 	  echo clfa_event_attendees_html( $event_id ); // phpcs:ignore
 	  ?>

@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name:       CLF Alumni Network
- * Plugin URI:        https://charlotteforum.org
+ * Plugin URI:        https://app.global
  * Description:       Private alumni network for the Charlotte Leadership Forum — member profiles, searchable directory, and admin member management. Bold Conviction design.
- * Version:           1.2.0
- * Author:            Charlotte Leadership Forum
+ * Version:           1.2.1
+ * Author:            Always About People
  * License:           GPL-2.0-or-later
  * Text Domain:       clf-alumni
  * GitHub Plugin URI: tipitoe-ro/clf-alumni
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CLFA_VERSION', '1.2.0' );
+define( 'CLFA_VERSION', '1.2.1' );
 define( 'CLFA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CLFA_URL', plugin_dir_url( __FILE__ ) );
 

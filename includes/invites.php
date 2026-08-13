@@ -19,6 +19,7 @@ function clfa_send_invitation( $rsvp, $is_reminder = false ) {
 	$rsvp_url = add_query_arg( 'clfa_rsvp', rawurlencode( $rsvp->token ), home_url( '/' ) );
 	$when     = clfa_event_when( $event_id );
 	$loc      = get_post_meta( $event_id, 'clfa_location', true );
+	$address  = get_post_meta( $event_id, 'clfa_address', true );
 	$deadline = get_post_meta( $event_id, 'clfa_deadline', true );
 	$name     = $user->first_name ?: $user->display_name;
 
@@ -34,7 +35,7 @@ function clfa_send_invitation( $rsvp, $is_reminder = false ) {
 		'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html( $intro ) . '</p>' .
 		'<table style="margin:24px 0;color:#eee9df;font-size:14px;line-height:2;">' .
 		'<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'When', 'clf-alumni' ) . '</td><td>' . esc_html( $when ) . '</td></tr>' .
-		( $loc ? '<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'Where', 'clf-alumni' ) . '</td><td>' . esc_html( $loc ) . '</td></tr>' : '' ) .
+		( $loc || $address ? '<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'Where', 'clf-alumni' ) . '</td><td><a href="' . esc_url( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ? $address : $loc ) ) . '" style="color:#eee9df;">' . esc_html( $loc ? $loc : $address ) . '</a>' . ( $loc && $address ? '<br><span style="color:#8a877e;font-size:12px;">' . esc_html( $address ) . '</span>' : '' ) . '</td></tr>' : '' ) .
 		( $deadline ? '<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'RSVP by', 'clf-alumni' ) . '</td><td>' . esc_html( wp_date( 'F j, Y', clfa_local_ts( $deadline ) ) ) . '</td></tr>' : '' ) .
 		'</table>' .
 		'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html__( 'Tap the button below to RSVP — it takes less than a minute, no password needed. Let us know your name, whether your wife/husband is coming, and how many participants total.', 'clf-alumni' ) . '</p>';

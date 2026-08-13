@@ -208,9 +208,18 @@ function clfa_token_rsvp_page() {
 		echo '<div class="clfa-wrap">';
 		echo '<p class="clfa-kicker">' . esc_html( clfa_event_when( $event_id ) ) . '</p>';
 		echo '<h2 class="clfa-title">' . esc_html( get_the_title( $event_id ) ) . '</h2>';
-		$loc = get_post_meta( $event_id, 'clfa_location', true );
-		if ( $loc ) {
-			echo '<p class="clfa-muted">' . esc_html( $loc ) . '</p>';
+		$loc     = get_post_meta( $event_id, 'clfa_location', true );
+		$address = get_post_meta( $event_id, 'clfa_address', true );
+		if ( $loc || $address ) {
+			$maps_url = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ? $address : $loc );
+			echo '<p class="clfa-muted"><a class="clfa-textlink" href="' . esc_url( $maps_url ) . '" target="_blank" rel="noopener">' . esc_html( $loc ? $loc : $address ) . ' ↗</a>';
+			if ( $loc && $address ) {
+				echo '<br><span class="clfa-small">' . esc_html( $address ) . '</span>';
+			}
+			echo '</p>';
+			if ( $address ) {
+				echo '<div class="clfa-eventmap"><iframe src="' . esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) . '" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' . esc_attr__( 'Map of event location', 'clf-alumni' ) . '"></iframe></div>';
+			}
 		}
 		echo '<div class="clfa-bio">' . wpautop( esc_html( wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ) ) ) . '</div>'; // phpcs:ignore
 		echo '<p class="clfa-calrow"><a class="clfa-textlink" href="' . esc_url( clfa_gcal_link( $event_id ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'Add to Google Calendar', 'clf-alumni' ) . ' ↗</a> <a class="clfa-textlink" href="' . esc_url( add_query_arg( array( 'clfa_ics' => $event_id, 't' => $rsvp->token ), home_url( '/' ) ) ) . '">' . esc_html__( 'Download .ics', 'clf-alumni' ) . '</a></p>';

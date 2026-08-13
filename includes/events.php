@@ -36,6 +36,7 @@ function clfa_event_details_box( $post ) {
 	$start    = get_post_meta( $post->ID, 'clfa_start', true );
 	$end      = get_post_meta( $post->ID, 'clfa_end', true );
 	$location = get_post_meta( $post->ID, 'clfa_location', true );
+	$address  = get_post_meta( $post->ID, 'clfa_address', true );
 	$capacity = get_post_meta( $post->ID, 'clfa_capacity', true );
 	$deadline = get_post_meta( $post->ID, 'clfa_deadline', true );
 	$hide     = get_post_meta( $post->ID, 'clfa_hide_attendees', true );
@@ -47,6 +48,28 @@ function clfa_event_details_box( $post ) {
 	    <td><input type="datetime-local" name="clfa_end" value="<?php echo esc_attr( $end ); ?>"> <span class="description"><?php esc_html_e( 'Optional — defaults to 2 hours after start.', 'clf-alumni' ); ?></span></td></tr>
 	  <tr><th><label><?php esc_html_e( 'Location', 'clf-alumni' ); ?></label></th>
 	    <td><input type="text" name="clfa_location" class="regular-text" value="<?php echo esc_attr( $location ); ?>" placeholder="<?php esc_attr_e( 'e.g. Myers Park Country Club, Charlotte', 'clf-alumni' ); ?>"></td></tr>
+	  <tr><th><label><?php esc_html_e( 'Address (for Google Maps)', 'clf-alumni' ); ?></label></th>
+	    <td>
+	      <input type="text" name="clfa_address" id="clfa_address" class="regular-text" value="<?php echo esc_attr( $address ); ?>" placeholder="<?php esc_attr_e( 'e.g. 2415 Roswell Ave, Charlotte, NC 28209', 'clf-alumni' ); ?>">
+	      <span class="description"><?php esc_html_e( 'Optional — makes the venue clickable and shows a map for members. The preview below updates as you type.', 'clf-alumni' ); ?></span>
+	      <div id="clfa_map_preview" style="margin-top:10px;<?php echo $address ? '' : 'display:none;'; ?>">
+	        <iframe id="clfa_map_iframe" src="<?php echo $address ? esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) : ''; ?>" style="width:100%;max-width:560px;height:260px;border:1px solid #ccd0d4;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+	      </div>
+	      <script>
+	      (function(){
+	        var f=document.getElementById('clfa_address'),w=document.getElementById('clfa_map_preview'),i=document.getElementById('clfa_map_iframe'),t;
+	        if(!f){return;}
+	        f.addEventListener('input',function(){
+	          clearTimeout(t);
+	          t=setTimeout(function(){
+	            var v=f.value.trim();
+	            if(v){ i.src='https://www.google.com/maps?q='+encodeURIComponent(v)+'&output=embed'; w.style.display=''; }
+	            else { w.style.display='none'; i.src=''; }
+	          },800);
+	        });
+	      })();
+	      </script>
+	    </td></tr>
 	  <tr><th><label><?php esc_html_e( 'Capacity (participants)', 'clf-alumni' ); ?></label></th>
 	    <td><input type="number" name="clfa_capacity" min="0" value="<?php echo esc_attr( $capacity ); ?>"> <span class="description"><?php esc_html_e( 'Optional — leave empty for unlimited.', 'clf-alumni' ); ?></span></td></tr>
 	  <tr><th><label><?php esc_html_e( 'RSVP deadline', 'clf-alumni' ); ?></label></th>
@@ -65,7 +88,7 @@ function clfa_save_event_meta( $post_id ) {
 	if ( ! current_user_can( 'edit_post', $post_id ) || wp_is_post_revision( $post_id ) ) {
 		return;
 	}
-	foreach ( array( 'clfa_start', 'clfa_end', 'clfa_location', 'clfa_capacity', 'clfa_deadline' ) as $key ) {
+	foreach ( array( 'clfa_start', 'clfa_end', 'clfa_location', 'clfa_address', 'clfa_capacity', 'clfa_deadline' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		}
@@ -136,9 +159,19 @@ function clfa_gcal_link( $event_id ) {
 		'action'   => 'TEMPLATE',
 		'text'     => get_the_title( $event_id ),
 		'dates'    => $fmt( $start ) . '/' . $fmt( $end ),
-		'location' => get_post_meta( $event_id, 'clfa_location', true ),
+		'location' => clfa_event_full_location( $event_id ),
 		'details'  => wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ),
 	), 'https://calendar.google.com/calendar/render' );
+}
+
+/* Venue + street address combined, for calendar entries */
+function clfa_event_full_location( $event_id ) {
+	$loc     = get_post_meta( $event_id, 'clfa_location', true );
+	$address = get_post_meta( $event_id, 'clfa_address', true );
+	if ( $loc && $address ) {
+		return $loc . ', ' . $address;
+	}
+	return $loc ? $loc : $address;
 }
 
 /* ============================================================
@@ -173,7 +206,7 @@ function clfa_serve_ics() {
 		'DTSTART:' . $fmt( $start ) . "\r\n" .
 		'DTEND:' . $fmt( $end ) . "\r\n" .
 		'SUMMARY:' . $esc( get_the_title( $event_id ) ) . "\r\n" .
-		'LOCATION:' . $esc( get_post_meta( $event_id, 'clfa_location', true ) ) . "\r\n" .
+		'LOCATION:' . $esc( clfa_event_full_location( $event_id ) ) . "\r\n" .
 		'DESCRIPTION:' . $esc( wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ) ) . "\r\n" .
 		"END:VEVENT\r\nEND:VCALENDAR\r\n";
 	nocache_headers();
@@ -290,8 +323,20 @@ function clfa_render_member_event( $event_id ) {
 	  <p><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-events' ) ); ?>">&larr; <?php esc_html_e( 'All events', 'clf-alumni' ); ?></a></p>
 	  <p class="clfa-kicker"><?php echo esc_html( clfa_event_when( $event_id ) ); ?></p>
 	  <h2 class="clfa-title"><?php echo esc_html( get_the_title( $event_id ) ); ?></h2>
-	  <?php $loc = get_post_meta( $event_id, 'clfa_location', true ); if ( $loc ) : ?>
-	    <p class="clfa-muted"><?php echo esc_html( $loc ); ?></p>
+	  <?php
+	  $loc     = get_post_meta( $event_id, 'clfa_location', true );
+	  $address = get_post_meta( $event_id, 'clfa_address', true );
+	  $map_q   = $address ? $address : $loc;
+	  if ( $loc || $address ) :
+			$maps_url = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $map_q );
+		?>
+	    <p class="clfa-muted">
+	      <a class="clfa-textlink" href="<?php echo esc_url( $maps_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $loc ? $loc : $address ); ?> ↗</a>
+	      <?php if ( $loc && $address ) : ?><br><span class="clfa-small"><?php echo esc_html( $address ); ?></span><?php endif; ?>
+	    </p>
+	    <?php if ( $address ) : ?>
+	      <div class="clfa-eventmap"><iframe src="<?php echo esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ); ?>" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="<?php esc_attr_e( 'Map of event location', 'clf-alumni' ); ?>"></iframe></div>
+	    <?php endif; ?>
 	  <?php endif; ?>
 	  <div class="clfa-bio"><?php echo wpautop( esc_html( wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ) ) ); // phpcs:ignore ?></div>
 	  <p class="clfa-calrow">

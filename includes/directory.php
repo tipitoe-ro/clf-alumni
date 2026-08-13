@@ -77,7 +77,7 @@ function clfa_directory_shortcode() {
 	    </select>
 	    <button type="submit" class="clfa-btn"><?php esc_html_e( 'Filter', 'clf-alumni' ); ?></button>
 	    <?php if ( $search || $class || $industry ) : ?>
-	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>"><?php esc_html_e( 'Clear', 'clf-alumni' ); ?></a>
+	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>"><?php esc_html_e( 'Clear', 'clf-alumni' ); ?></a>
 	    <?php endif; ?>
 	  </form>
 
@@ -91,7 +91,7 @@ function clfa_directory_shortcode() {
 			$prof = get_user_meta( $m->ID, 'clfa_profession', true );
 			$comp = get_user_meta( $m->ID, 'clfa_company', true );
 			$ind  = get_user_meta( $m->ID, 'clfa_industry', true );
-			$url  = add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni' ) ); ?>
+			$url  = add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni-directory' ) ); ?>
 	        <a class="clfa-cardlink" href="<?php echo esc_url( $url ); ?>">
 	          <div class="clfa-card clfa-membercard">
 	            <?php echo clfa_member_photo( $m->ID, 'medium' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
@@ -118,7 +118,7 @@ add_shortcode( 'clf_alumni_directory', 'clfa_directory_shortcode' );
 function clfa_render_single_member( $member_id ) {
 	$member = get_userdata( $member_id );
 	if ( ! $member || ! in_array( 'clf_alumni', (array) $member->roles, true ) || get_user_meta( $member_id, 'clfa_disabled', true ) ) {
-		return '<div class="clfa-wrap"><p class="clfa-muted">' . esc_html__( 'Member not found.', 'clf-alumni' ) . '</p><p><a class="clfa-textlink" href="' . esc_url( clfa_page_url( 'alumni' ) ) . '">&larr; ' . esc_html__( 'Back to directory', 'clf-alumni' ) . '</a></p></div>';
+		return '<div class="clfa-wrap"><p class="clfa-muted">' . esc_html__( 'Member not found.', 'clf-alumni' ) . '</p><p><a class="clfa-textlink" href="' . esc_url( clfa_page_url( 'alumni-directory' ) ) . '">&larr; ' . esc_html__( 'Back to directory', 'clf-alumni' ) . '</a></p></div>';
 	}
 
 	$meta = array();
@@ -130,7 +130,7 @@ function clfa_render_single_member( $member_id ) {
 
 	ob_start(); ?>
 	<div class="clfa-wrap clfa-single">
-	  <p><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>">&larr; <?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a></p>
+	  <p><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">&larr; <?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a></p>
 	  <div class="clfa-singlegrid">
 	    <div class="clfa-singlephoto"><?php echo clfa_member_photo( $member_id, 'large' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
 	    <div>

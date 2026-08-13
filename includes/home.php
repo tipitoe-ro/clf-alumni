@@ -140,7 +140,7 @@ function clfa_home_shortcode() {
 	      <p class="clfa-muted"><?php esc_html_e( 'Here\'s what\'s happening across the network.', 'clf-alumni' ); ?></p>
 	    </div>
 	    <div class="clfa-dirlinks">
-	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>"><?php esc_html_e( 'Directory', 'clf-alumni' ); ?></a>
+	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>"><?php esc_html_e( 'Directory', 'clf-alumni' ); ?></a>
 	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-mentors' ) ); ?>"><?php esc_html_e( 'Mentors', 'clf-alumni' ); ?></a>
 	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-profile' ) ); ?>"><?php esc_html_e( 'My profile', 'clf-alumni' ); ?></a>
 	    </div>
@@ -212,7 +212,7 @@ function clfa_home_shortcode() {
 	        <ul class="clfa-attendlist clfa-newmembers">
 	          <?php foreach ( $new_members as $m ) : ?>
 	            <li class="clfa-attendee">
-	              <a class="clfa-cardlink clfa-newmember" href="<?php echo esc_url( add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni' ) ) ); ?>">
+	              <a class="clfa-cardlink clfa-newmember" href="<?php echo esc_url( add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>">
 	                <?php echo clfa_member_photo( $m->ID ); // phpcs:ignore ?>
 	                <span class="clfa-attendname"><?php echo esc_html( $m->display_name ); ?>
 	                  <?php $year = get_user_meta( $m->ID, 'clfa_class_year', true ); if ( $year ) : ?>
@@ -223,7 +223,7 @@ function clfa_home_shortcode() {
 	            </li>
 	          <?php endforeach; ?>
 	        </ul>
-	        <p class="clfa-homemore"><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>"><?php esc_html_e( 'Browse the directory →', 'clf-alumni' ); ?></a></p>
+	        <p class="clfa-homemore"><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>"><?php esc_html_e( 'Browse the directory →', 'clf-alumni' ); ?></a></p>
 	      <?php endif; ?>
 	    </div>
 	  </div>

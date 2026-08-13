@@ -213,7 +213,7 @@ function clfa_events_shortcode() {
 	      <p class="clfa-kicker"><?php esc_html_e( 'Alumni Network — events', 'clf-alumni' ); ?></p>
 	      <h2 class="clfa-title"><?php esc_html_e( 'Show', 'clf-alumni' ); ?> <em><?php esc_html_e( 'up.', 'clf-alumni' ); ?></em></h2>
 	    </div>
-	    <div class="clfa-dirlinks"><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>">&larr; <?php esc_html_e( 'Directory', 'clf-alumni' ); ?></a></div>
+	    <div class="clfa-dirlinks"><a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">&larr; <?php esc_html_e( 'Directory', 'clf-alumni' ); ?></a></div>
 	  </div>
 	  <?php if ( empty( $upcoming ) ) : ?>
 	    <p class="clfa-muted clfa-empty"><?php esc_html_e( 'No upcoming events yet — check back soon.', 'clf-alumni' ); ?></p>

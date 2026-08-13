@@ -213,7 +213,7 @@ function clfa_opportunities_shortcode() {
 	          <div class="clfa-oppbody"><?php echo wpautop( esc_html( $p->post_content ) ); // phpcs:ignore ?></div>
 	          <p class="clfa-oppmeta">
 	            <?php if ( $author ) : ?>
-	              <a class="clfa-textlink" href="<?php echo esc_url( add_query_arg( 'member', $author->ID, clfa_page_url( 'alumni' ) ) ); ?>"><?php echo esc_html( sprintf( __( 'Posted by %s', 'clf-alumni' ), $author->display_name ) ); ?></a>
+	              <a class="clfa-textlink" href="<?php echo esc_url( add_query_arg( 'member', $author->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>"><?php echo esc_html( sprintf( __( 'Posted by %s', 'clf-alumni' ), $author->display_name ) ); ?></a>
 	            <?php endif; ?>
 	            <?php if ( $contact ) : ?><span class="clfa-oppcontact"><?php echo esc_html( sprintf( __( 'Contact: %s', 'clf-alumni' ), $contact ) ); ?></span><?php endif; ?>
 	            <?php if ( $expires ) : ?><span class="clfa-oppexpiry"><?php echo esc_html( sprintf( __( 'Open until %s', 'clf-alumni' ), wp_date( 'M j, Y', clfa_local_ts( $expires . ' 12:00:00' ) ) ) ); ?></span><?php endif; ?>

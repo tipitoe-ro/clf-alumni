@@ -103,7 +103,7 @@ function clfa_handle_mentor_interest() {
 		sprintf( __( 'Mentorship request from %s', 'clf-alumni' ), $me->display_name ),
 		$body,
 		__( 'View their profile', 'clf-alumni' ),
-		add_query_arg( 'member', $me->ID, clfa_page_url( 'alumni' ) ),
+		add_query_arg( 'member', $me->ID, clfa_page_url( 'alumni-directory' ) ),
 		esc_html__( 'You\'re receiving this because you opted in as a CLF mentor. You can opt out any time on your profile.', 'clf-alumni' )
 	);
 	if ( $sent ) {

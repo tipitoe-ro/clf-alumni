@@ -129,7 +129,7 @@ function clfa_profile_shortcode() {
 
 	    <div class="clfa-actions">
 	      <button type="submit" class="clfa-btn"><?php esc_html_e( 'Save profile', 'clf-alumni' ); ?></button>
-	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni' ) ); ?>"><?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a>
+	      <a class="clfa-textlink" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>"><?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a>
 	    </div>
 	  </form>
 	</div>

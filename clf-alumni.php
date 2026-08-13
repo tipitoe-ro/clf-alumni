@@ -3,7 +3,7 @@
  * Plugin Name:       CLF Alumni Network
  * Plugin URI:        https://charlotteforum.org
  * Description:       Private alumni network for the Charlotte Leadership Forum — member profiles, searchable directory, and admin member management. Bold Conviction design.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Charlotte Leadership Forum
  * License:           GPL-2.0-or-later
  * Text Domain:       clf-alumni
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CLFA_VERSION', '1.0.0' );
+define( 'CLFA_VERSION', '1.1.0' );
 define( 'CLFA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CLFA_URL', plugin_dir_url( __FILE__ ) );
 
@@ -22,6 +22,10 @@ require_once CLFA_DIR . 'includes/access.php';
 require_once CLFA_DIR . 'includes/profile.php';
 require_once CLFA_DIR . 'includes/directory.php';
 require_once CLFA_DIR . 'includes/admin.php';
+require_once CLFA_DIR . 'includes/email.php';
+require_once CLFA_DIR . 'includes/events.php';
+require_once CLFA_DIR . 'includes/rsvp.php';
+require_once CLFA_DIR . 'includes/invites.php';
 
 /* ============================================================
    Activation: role + members-area pages
@@ -34,6 +38,7 @@ function clfa_activate() {
 		'alumni-login'   => array( 'title' => 'Alumni Login',   'content' => '[clf_alumni_login]' ),
 		'alumni'         => array( 'title' => 'Alumni Network', 'content' => '[clf_alumni_directory]' ),
 		'alumni-profile' => array( 'title' => 'My Profile',     'content' => '[clf_alumni_profile]' ),
+		'alumni-events'  => array( 'title' => 'Alumni Events',  'content' => '[clf_alumni_events]' ),
 	);
 	foreach ( $pages as $slug => $p ) {
 		if ( ! get_page_by_path( $slug ) ) {
@@ -46,13 +51,23 @@ function clfa_activate() {
 			) );
 		}
 	}
+	clfa_install_rsvp_table();
+	update_option( 'clfa_db_version', CLFA_VERSION );
 }
+
+/* Upgrade path: Git Updater replaces files without re-activating */
+function clfa_maybe_upgrade() {
+	if ( get_option( 'clfa_db_version' ) !== CLFA_VERSION ) {
+		clfa_activate();
+	}
+}
+add_action( 'admin_init', 'clfa_maybe_upgrade' );
 
 /* ============================================================
    Front-end assets (only when a members-area page renders)
    ============================================================ */
 function clfa_enqueue_assets() {
-	if ( ! is_page( array( 'alumni', 'alumni-profile', 'alumni-login' ) ) ) {
+	if ( ! is_page( array( 'alumni', 'alumni-profile', 'alumni-login', 'alumni-events' ) ) ) {
 		return;
 	}
 	wp_enqueue_style( 'clfa-fonts', 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap', array(), null );

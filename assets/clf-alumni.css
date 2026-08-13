@@ -77,6 +77,20 @@
 .clfa-bio{margin:22px 0;max-width:560px;font-size:15px;line-height:1.75;color:#3d4750}
 .clfa-contact{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-top:1px solid #c8bdab;margin-top:26px;padding-top:22px}
 
+/* ---- Events ---- */
+.clfa-eventlist{display:grid;gap:1px;background:#c8bdab}
+.clfa-eventcard{background:var(--paper);padding:22px;display:flex;gap:22px;align-items:flex-start;transition:background .2s}
+.clfa-cardlink:hover .clfa-eventcard{background:#f3eee5}
+.clfa-eventdate{flex:none;width:74px;text-align:center;background:var(--ink);color:var(--paper);padding:12px 6px}
+.clfa-eventdate strong{display:block;font-size:28px;letter-spacing:-.04em;line-height:1}
+.clfa-eventdate span{font:9px "DM Mono";letter-spacing:.1em;text-transform:uppercase;color:#d4a492}
+.clfa-badge-yes{background:#ccd8c6;color:#2c4a30}
+.clfa-badge-open{background:var(--rust);color:#fff}
+.clfa-calrow{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 6px}
+.clfa-rsvpbox{max-width:640px;margin-top:26px}
+.clfa-yesno{display:flex;gap:26px;margin-bottom:18px}
+.clfa-rsvpform .clfa-check{font-size:14px}
+
 /* ---- Responsive ---- */
 @media(max-width:720px){
   .clfa-dirhead{display:block}

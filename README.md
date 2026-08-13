@@ -10,6 +10,8 @@ Private, members-only alumni network for the Charlotte Leadership Forum. Bold Co
   - `/alumni-profile/` — the member's own profile editor (photo, spouse, class year, bio, work, links, contact visibility)
 - **Privacy** — everything is invisible to logged-out visitors; members choose whether email/phone are shown to other members.
 - **Admin → CLF Alumni** — member list (deactivate/reactivate, resend invites), add single member, CSV import.
+- **Events & RSVPs** — admins create Alumni Events (date, location, capacity, RSVP deadline), invite members (all / by class year / hand-picked), and emails go out with one-click tokenized RSVP links (no login needed). The RSVP form captures name, spouse attendance, total participants, and notes. Members also see upcoming events at `/alumni-events/`. Every event offers "Add to Google Calendar" and an `.ics` download. Admins get a per-event RSVP dashboard with CSV export, a manual "remind non-responders" button, and automatic reminders 3 days before the deadline.
+- **Google Workspace email** — CLF Alumni → Email Settings configures SMTP (Gmail app password) so invitations come from the real CLF address; includes a test-email button.
 
 ## Install
 1. Install via Git Updater: repo `tipitoe-ro/clf-alumni`, branch `main` (or upload a zip of this folder).

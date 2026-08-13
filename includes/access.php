@@ -44,13 +44,13 @@ function clfa_hide_admin_bar( $show ) {
 }
 add_filter( 'show_admin_bar', 'clfa_hide_admin_bar' );
 
-/* After login, send alumni to the directory */
+/* After login, send alumni to their profile */
 function clfa_login_redirect( $redirect_to, $requested, $user ) {
 	if ( $user instanceof WP_User && in_array( 'clf_alumni', (array) $user->roles, true ) ) {
 		if ( ! empty( $requested ) && strpos( $requested, home_url() ) === 0 ) {
 			return $requested;
 		}
-		return clfa_page_url( 'alumni' );
+		return clfa_page_url( 'alumni-profile' );
 	}
 	return $redirect_to;
 }
@@ -61,12 +61,12 @@ add_filter( 'login_redirect', 'clfa_login_redirect', 10, 3 );
    ============================================================ */
 function clfa_login_shortcode() {
 	if ( clfa_is_member() ) {
-		return '<div class="clfa-wrap clfa-login"><div class="clfa-card"><p class="clfa-kicker">' . esc_html__( 'Alumni Network', 'clf-alumni' ) . '</p><h2>' . esc_html__( 'You are signed in.', 'clf-alumni' ) . '</h2><p class="clfa-muted"><a class="clfa-btn" href="' . esc_url( clfa_page_url( 'alumni' ) ) . '">' . esc_html__( 'Go to the directory', 'clf-alumni' ) . '</a></p></div></div>';
+		return '<div class="clfa-wrap clfa-login"><div class="clfa-card"><p class="clfa-kicker">' . esc_html__( 'Alumni Network', 'clf-alumni' ) . '</p><h2>' . esc_html__( 'You are signed in.', 'clf-alumni' ) . '</h2><p class="clfa-muted"><a class="clfa-btn" href="' . esc_url( clfa_page_url( 'alumni-profile' ) ) . '">' . esc_html__( 'Go to my profile', 'clf-alumni' ) . '</a></p></div></div>';
 	}
 
-	$redirect = isset( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : clfa_page_url( 'alumni' );
+	$redirect = isset( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : clfa_page_url( 'alumni-profile' );
 	if ( strpos( $redirect, home_url() ) !== 0 ) {
-		$redirect = clfa_page_url( 'alumni' );
+		$redirect = clfa_page_url( 'alumni-profile' );
 	}
 
 	ob_start(); ?>

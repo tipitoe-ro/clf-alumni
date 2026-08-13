@@ -2,16 +2,13 @@
 defined( 'ABSPATH' ) || exit;
 
 /* ============================================================
-   SMTP settings (Google Workspace) — CLF Alumni → Email Settings
+   Email sender settings — CLF Alumni → Email Settings
+   Delivery (SMTP) is handled site-wide by the Gravity SMTP
+   plugin; here we only control the From name/address on
+   alumni emails and offer a test send.
    ============================================================ */
 function clfa_email_settings() {
 	return wp_parse_args( get_option( 'clfa_email', array() ), array(
-		'enabled'    => 0,
-		'host'       => 'smtp.gmail.com',
-		'port'       => 587,
-		'encryption' => 'tls',
-		'username'   => '',
-		'password'   => '',
 		'from_email' => '',
 		'from_name'  => 'Charlotte Leadership Forum',
 	) );
@@ -28,14 +25,7 @@ function clfa_email_settings_page() {
 	}
 	$notice = '';
 	if ( isset( $_POST['clfa_email_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['clfa_email_nonce'] ), 'clfa_email_save' ) ) {
-		$old = clfa_email_settings();
 		$new = array(
-			'enabled'    => empty( $_POST['enabled'] ) ? 0 : 1,
-			'host'       => sanitize_text_field( wp_unslash( $_POST['host'] ?? 'smtp.gmail.com' ) ),
-			'port'       => (int) ( $_POST['port'] ?? 587 ),
-			'encryption' => in_array( $_POST['encryption'] ?? 'tls', array( 'tls', 'ssl', 'none' ), true ) ? sanitize_key( $_POST['encryption'] ) : 'tls',
-			'username'   => sanitize_text_field( wp_unslash( $_POST['username'] ?? '' ) ),
-			'password'   => '' !== ( $_POST['password'] ?? '' ) ? trim( (string) wp_unslash( $_POST['password'] ) ) : $old['password'],
 			'from_email' => sanitize_email( wp_unslash( $_POST['from_email'] ?? '' ) ),
 			'from_name'  => sanitize_text_field( wp_unslash( $_POST['from_name'] ?? '' ) ),
 		);
@@ -44,39 +34,19 @@ function clfa_email_settings_page() {
 		if ( isset( $_POST['send_test'] ) && $_POST['send_test'] ) {
 			$to = wp_get_current_user()->user_email;
 			$ok = clfa_send_branded( $to, __( 'CLF test email', 'clf-alumni' ), '<p>' . esc_html__( 'This is a test email from the CLF Alumni plugin. If you can read this, delivery works.', 'clf-alumni' ) . '</p>' );
-			$notice .= ' ' . ( $ok ? sprintf( __( 'Test email sent to %s.', 'clf-alumni' ), $to ) : __( 'Test email FAILED — check the settings.', 'clf-alumni' ) );
+			$notice .= ' ' . ( $ok ? sprintf( __( 'Test email sent to %s.', 'clf-alumni' ), $to ) : __( 'Test email FAILED — check your Gravity SMTP configuration.', 'clf-alumni' ) );
 		}
 	}
 	$s = clfa_email_settings();
 	?>
 	<div class="wrap">
-	  <h1><?php esc_html_e( 'Alumni Email Settings (Google Workspace SMTP)', 'clf-alumni' ); ?></h1>
+	  <h1><?php esc_html_e( 'Alumni Email Settings', 'clf-alumni' ); ?></h1>
 	  <?php if ( $notice ) : ?><div class="notice notice-success"><p><?php echo esc_html( $notice ); ?></p></div><?php endif; ?>
-	  <p><?php esc_html_e( 'Send invitations and reminders through CLF\'s Google Workspace account so they come from a real CLF address and reach inboxes.', 'clf-alumni' ); ?></p>
-	  <ol>
-	    <li><?php esc_html_e( 'In the Google account (e.g. info@charlotteforum.org): turn on 2-Step Verification, then create an App Password (Google Account → Security → App passwords).', 'clf-alumni' ); ?></li>
-	    <li><?php esc_html_e( 'Enter that address as Username/From and the 16-character app password below.', 'clf-alumni' ); ?></li>
-	  </ol>
+	  <p><?php esc_html_e( 'Email delivery is handled by the Gravity SMTP plugin (Gravity SMTP → Settings). Below you can set the sender name and address used on alumni emails, and send yourself a test.', 'clf-alumni' ); ?></p>
 	  <form method="post">
 	    <?php wp_nonce_field( 'clfa_email_save', 'clfa_email_nonce' ); ?>
 	    <table class="form-table">
-	      <tr><th><?php esc_html_e( 'Use SMTP for alumni emails', 'clf-alumni' ); ?></th><td><label><input type="checkbox" name="enabled" <?php checked( $s['enabled'] ); ?>> <?php esc_html_e( 'Enabled (otherwise the server\'s default mail is used)', 'clf-alumni' ); ?></label></td></tr>
-	      <tr><th><?php esc_html_e( 'SMTP host', 'clf-alumni' ); ?></th><td><input type="text" name="host" class="regular-text" value="<?php echo esc_attr( $s['host'] ); ?>"></td></tr>
-	      <tr><th><?php esc_html_e( 'Port', 'clf-alumni' ); ?></th><td><input type="number" name="port" value="<?php echo esc_attr( $s['port'] ); ?>"> <span class="description">587 (TLS) / 465 (SSL)</span></td></tr>
-	      <tr><th><?php esc_html_e( 'Encryption', 'clf-alumni' ); ?></th><td><select name="encryption">
-	        <option value="tls" <?php selected( $s['encryption'], 'tls' ); ?>>TLS</option>
-	        <option value="ssl" <?php selected( $s['encryption'], 'ssl' ); ?>>SSL</option>
-	        <option value="none" <?php selected( $s['encryption'], 'none' ); ?>><?php esc_html_e( 'None', 'clf-alumni' ); ?></option>
-	      </select></td></tr>
-	      <tr><th><?php esc_html_e( 'Username (Workspace email)', 'clf-alumni' ); ?></th><td><input type="text" name="username" class="regular-text" value="<?php echo esc_attr( $s['username'] ); ?>" placeholder="info@charlotteforum.org" autocomplete="off"></td></tr>
-	      <tr><th><?php esc_html_e( 'App password', 'clf-alumni' ); ?></th><td>
-	        <?php if ( defined( 'CLFA_SMTP_PASSWORD' ) ) : ?>
-	          <em><?php esc_html_e( 'Set via CLFA_SMTP_PASSWORD in wp-config.php (recommended) — the field below is ignored.', 'clf-alumni' ); ?></em><br>
-	        <?php endif; ?>
-	        <input type="password" name="password" class="regular-text" value="" placeholder="<?php echo $s['password'] ? esc_attr__( '•••••••• (saved — leave blank to keep)', 'clf-alumni' ) : ''; ?>" autocomplete="new-password">
-	        <p class="description"><?php esc_html_e( 'Most secure option: add define( \'CLFA_SMTP_PASSWORD\', \'your app password\' ); to wp-config.php instead of saving it here.', 'clf-alumni' ); ?></p>
-	      </td></tr>
-	      <tr><th><?php esc_html_e( 'From email', 'clf-alumni' ); ?></th><td><input type="email" name="from_email" class="regular-text" value="<?php echo esc_attr( $s['from_email'] ); ?>" placeholder="info@charlotteforum.org"></td></tr>
+	      <tr><th><?php esc_html_e( 'From email', 'clf-alumni' ); ?></th><td><input type="email" name="from_email" class="regular-text" value="<?php echo esc_attr( $s['from_email'] ); ?>" placeholder="info@charlotteforum.org"><p class="description"><?php esc_html_e( 'Leave blank to use the sender configured in Gravity SMTP.', 'clf-alumni' ); ?></p></td></tr>
 	      <tr><th><?php esc_html_e( 'From name', 'clf-alumni' ); ?></th><td><input type="text" name="from_name" class="regular-text" value="<?php echo esc_attr( $s['from_name'] ); ?>"></td></tr>
 	      <tr><th></th><td><label><input type="checkbox" name="send_test" value="1"> <?php esc_html_e( 'Send a test email to me after saving', 'clf-alumni' ); ?></label></td></tr>
 	    </table>
@@ -85,31 +55,6 @@ function clfa_email_settings_page() {
 	</div>
 	<?php
 }
-
-/* ---- Apply SMTP config only for emails sent by this plugin ---- */
-function clfa_phpmailer_init( $phpmailer ) {
-	if ( ! apply_filters( 'clfa_sending', false ) ) {
-		return;
-	}
-	$s = clfa_email_settings();
-	// Prefer a wp-config.php constant so the password isn't stored in the DB:
-	// define( 'CLFA_SMTP_PASSWORD', '...' );
-	$password = defined( 'CLFA_SMTP_PASSWORD' ) ? CLFA_SMTP_PASSWORD : $s['password'];
-	if ( ! $s['enabled'] || ! $s['username'] || ! $password ) {
-		return;
-	}
-	$phpmailer->isSMTP();
-	$phpmailer->Host       = $s['host'];
-	$phpmailer->Port       = $s['port'];
-	$phpmailer->SMTPAuth   = true;
-	$phpmailer->Username   = $s['username'];
-	$phpmailer->Password   = $password;
-	$phpmailer->SMTPSecure = 'none' === $s['encryption'] ? '' : $s['encryption'];
-	if ( $s['from_email'] ) {
-		$phpmailer->setFrom( $s['from_email'], $s['from_name'] ?: 'CLF', false );
-	}
-}
-add_action( 'phpmailer_init', 'clfa_phpmailer_init' );
 
 /* ============================================================
    Branded HTML email — Bold Conviction shell around $body_html
@@ -134,9 +79,5 @@ function clfa_send_branded( $to, $subject, $body_html, $cta_label = '', $cta_url
 	if ( $s['from_email'] ) {
 		$headers[] = 'From: ' . ( $s['from_name'] ?: 'CLF' ) . ' <' . $s['from_email'] . '>';
 	}
-	$flag = function () { return true; };
-	add_filter( 'clfa_sending', $flag );
-	$ok = wp_mail( $to, $subject, $html, $headers );
-	remove_filter( 'clfa_sending', $flag );
-	return $ok;
+	return wp_mail( $to, $subject, $html, $headers );
 }

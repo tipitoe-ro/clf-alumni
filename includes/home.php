@@ -125,6 +125,25 @@ function clfa_home_shortcode() {
 	$user  = wp_get_current_user();
 	$first = $user->first_name ?: $user->display_name;
 
+	// Single-announcement view: ?announcement=ID opens the full post.
+	if ( isset( $_GET['announcement'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		$a = get_post( (int) $_GET['announcement'] ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( $a && 'clfa_announcement' === $a->post_type && 'publish' === $a->post_status ) {
+			ob_start();
+			echo clfa_portal_nav( 'home' ); // phpcs:ignore
+			?>
+			<div class="clfa-wrap clfa-ann-single">
+			  <a class="clfa-link-mono clfa-back" href="<?php echo esc_url( clfa_page_url( 'alumni-home' ) ); ?>">← <?php esc_html_e( 'Back to home', 'clf-alumni' ); ?></a>
+			  <div class="clfa-ann-date"><?php echo esc_html( get_the_date( 'M j, Y', $a ) ); ?></div>
+			  <span class="clfa-ann-type"><?php esc_html_e( 'From CLF', 'clf-alumni' ); ?></span>
+			  <h1><?php echo esc_html( $a->post_title ); ?></h1>
+			  <div class="clfa-ann-full"><?php echo wpautop( esc_html( wp_strip_all_tags( $a->post_content ) ) ); // phpcs:ignore ?></div>
+			</div>
+			<?php
+			return ob_get_clean();
+		}
+	}
+
 	$hour     = (int) wp_date( 'G' );
 	$greeting = __( 'Good morning,', 'clf-alumni' );
 	if ( $hour >= 12 && $hour < 18 ) {
@@ -171,7 +190,8 @@ function clfa_home_shortcode() {
 	            <div>
 	              <span class="clfa-ann-type"><?php esc_html_e( 'From CLF', 'clf-alumni' ); ?></span>
 	              <h3><?php echo esc_html( $a->post_title ); ?></h3>
-	              <div class="clfa-ann-body"><?php echo wpautop( esc_html( wp_strip_all_tags( $a->post_content ) ) ); // phpcs:ignore ?></div>
+	              <div class="clfa-ann-body clfa-clamp2"><?php echo esc_html( wp_strip_all_tags( $a->post_content ) ); ?></div>
+	              <a class="clfa-link-mono clfa-readmore" href="<?php echo esc_url( add_query_arg( 'announcement', $a->ID, clfa_page_url( 'alumni-home' ) ) ); ?>"><?php esc_html_e( 'Read more', 'clf-alumni' ); ?> ↗</a>
 	            </div>
 	          </article>
 	        <?php endforeach; ?>
@@ -234,7 +254,7 @@ function clfa_home_shortcode() {
 	            <a class="clfa-new-member" href="<?php echo esc_url( add_query_arg( 'member', $m->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>">
 	              <?php echo clfa_avatar( $m->ID, 'clfa-avatar-sm' ); // phpcs:ignore ?>
 	              <div><strong><?php echo esc_html( $m->display_name ); ?></strong><small><?php echo esc_html( trim( $prof . ( $prof && $comp ? ', ' : '' ) . $comp ) ); ?></small></div>
-	              <?php if ( $year ) : ?><span><?php echo esc_html( $year ); ?></span><?php endif; ?>
+	              <?php if ( $year ) : ?><span class="clfa-nm-year"><?php echo esc_html( sprintf( __( 'Class of %s', 'clf-alumni' ), $year ) ); ?></span><?php endif; ?>
 	            </a>
 	          <?php endforeach; ?>
 	        <?php endif; ?>
@@ -252,7 +272,6 @@ function clfa_home_shortcode() {
 	    </div>
 	  </div>
 	</section>
-	<div class="clfa-home-bottom-pad"></div>
 	<?php
 	return ob_get_clean();
 }

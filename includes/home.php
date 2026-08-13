@@ -137,7 +137,7 @@ function clfa_home_shortcode() {
 			  <div class="clfa-ann-date"><?php echo esc_html( get_the_date( 'M j, Y', $a ) ); ?></div>
 			  <span class="clfa-ann-type"><?php esc_html_e( 'From CLF', 'clf-alumni' ); ?></span>
 			  <h1><?php echo esc_html( $a->post_title ); ?></h1>
-			  <div class="clfa-ann-full"><?php echo wpautop( esc_html( wp_strip_all_tags( $a->post_content ) ) ); // phpcs:ignore ?></div>
+			  <div class="clfa-ann-full"><?php echo wpautop( wp_kses_post( $a->post_content ) ); // phpcs:ignore -- kses-sanitized ?></div>
 			</div>
 			<?php
 			return ob_get_clean();

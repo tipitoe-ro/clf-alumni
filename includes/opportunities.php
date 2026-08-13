@@ -230,7 +230,7 @@ function clfa_opportunities_shortcode() {
 	          <div class="clfa-opp-kind is-<?php echo esc_attr( $ptype ); ?>"><?php echo esc_html( ( $icons[ $ptype ] ?? '' ) . ' ' . ( $types[ $ptype ] ?? $ptype ) ); ?></div>
 	          <div class="clfa-opp-main">
 	            <h2><?php echo esc_html( $p->post_title ); ?></h2>
-	            <div class="clfa-opp-body"><?php echo wpautop( esc_html( $p->post_content ) ); // phpcs:ignore ?></div>
+	            <div class="clfa-opp-body"><?php echo wpautop( wp_kses_post( $p->post_content ) ); // phpcs:ignore -- kses-sanitized ?></div>
 	            <?php if ( $author ) :
 					$ayear = get_user_meta( $author->ID, 'clfa_class_year', true ); ?>
 	              <a class="clfa-opp-by" href="<?php echo esc_url( add_query_arg( 'member', $author->ID, clfa_page_url( 'alumni-directory' ) ) ); ?>">

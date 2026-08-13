@@ -180,23 +180,6 @@ function clfa_home_shortcode() {
 	<div class="clfa-wrap clfa-home-wrap">
 	  <div class="clfa-home-grid">
 	    <section>
-	      <div class="clfa-section-head"><h2><?php esc_html_e( 'From the Forum', 'clf-alumni' ); ?></h2></div>
-	      <?php if ( ! $announcements ) : ?>
-	        <p class="clfa-muted" style="padding:26px 0;"><?php esc_html_e( 'No announcements right now — enjoy the quiet.', 'clf-alumni' ); ?></p>
-	      <?php else : ?>
-	        <?php foreach ( $announcements as $a ) : ?>
-	          <article class="clfa-announcement">
-	            <div class="clfa-ann-date"><?php echo esc_html( get_the_date( 'M j, Y', $a ) ); ?></div>
-	            <div>
-	              <span class="clfa-ann-type"><?php esc_html_e( 'From CLF', 'clf-alumni' ); ?></span>
-	              <h3><?php echo esc_html( $a->post_title ); ?></h3>
-	              <div class="clfa-ann-body clfa-clamp2"><?php echo esc_html( wp_strip_all_tags( $a->post_content ) ); ?></div>
-	              <a class="clfa-link-mono clfa-readmore" href="<?php echo esc_url( add_query_arg( 'announcement', $a->ID, clfa_page_url( 'alumni-home' ) ) ); ?>"><?php esc_html_e( 'Read more', 'clf-alumni' ); ?> ↗</a>
-	            </div>
-	          </article>
-	        <?php endforeach; ?>
-	      <?php endif; ?>
-
 	      <div class="clfa-home-events">
 	        <div class="clfa-section-head"><h2><?php esc_html_e( 'On the calendar', 'clf-alumni' ); ?></h2><a class="clfa-link-mono" href="<?php echo esc_url( clfa_page_url( 'alumni-events' ) ); ?>"><?php esc_html_e( 'All events', 'clf-alumni' ); ?> ↗</a></div>
 	        <?php if ( ! $events ) : ?>
@@ -224,6 +207,25 @@ function clfa_home_shortcode() {
 	            </article>
 	          <?php endforeach; ?>
 	        <?php endif; ?>
+	      </div>
+
+	      <div class="clfa-home-announcements">
+	      <div class="clfa-section-head"><h2><?php esc_html_e( 'From the Forum', 'clf-alumni' ); ?></h2></div>
+	      <?php if ( ! $announcements ) : ?>
+	        <p class="clfa-muted" style="padding:26px 0;"><?php esc_html_e( 'No announcements right now — enjoy the quiet.', 'clf-alumni' ); ?></p>
+	      <?php else : ?>
+	        <?php foreach ( $announcements as $a ) : ?>
+	          <article class="clfa-announcement">
+	            <div class="clfa-ann-date"><?php echo esc_html( get_the_date( 'M j, Y', $a ) ); ?></div>
+	            <div>
+	              <span class="clfa-ann-type"><?php esc_html_e( 'From CLF', 'clf-alumni' ); ?></span>
+	              <h3><?php echo esc_html( $a->post_title ); ?></h3>
+	              <div class="clfa-ann-body clfa-clamp2"><?php echo esc_html( wp_strip_all_tags( $a->post_content ) ); ?></div>
+	              <a class="clfa-link-mono clfa-readmore" href="<?php echo esc_url( add_query_arg( 'announcement', $a->ID, clfa_page_url( 'alumni-home' ) ) ); ?>"><?php esc_html_e( 'Read more', 'clf-alumni' ); ?> ↗</a>
+	            </div>
+	          </article>
+	        <?php endforeach; ?>
+	      <?php endif; ?>
 	      </div>
 	    </section>
 

@@ -53,7 +53,7 @@ function clfa_event_details_box( $post ) {
 	      <input type="text" name="clfa_address" id="clfa_address" class="regular-text" value="<?php echo esc_attr( $address ); ?>" placeholder="<?php esc_attr_e( 'e.g. 2415 Roswell Ave, Charlotte, NC 28209', 'clf-alumni' ); ?>">
 	      <span class="description"><?php esc_html_e( 'Optional — makes the venue clickable and shows a map for members. The preview below updates as you type.', 'clf-alumni' ); ?></span>
 	      <div id="clfa_map_preview" style="margin-top:10px;<?php echo $address ? '' : 'display:none;'; ?>">
-	        <iframe id="clfa_map_iframe" src="<?php echo $address ? esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) : ''; ?>" style="width:100%;max-width:560px;height:260px;border:1px solid #ccd0d4;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+	        <iframe id="clfa_map_iframe" src="<?php echo $address ? esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) : ''; ?>" style="width:100%;max-width:560px;height:260px;border:1px solid #ccd0d4;" loading="lazy" referrerpolicy="no-referrer"></iframe>
 	      </div>
 	      <script>
 	      (function(){
@@ -335,7 +335,7 @@ function clfa_render_member_event( $event_id ) {
 	      <?php if ( $loc && $address ) : ?><br><span class="clfa-small"><?php echo esc_html( $address ); ?></span><?php endif; ?>
 	    </p>
 	    <?php if ( $address ) : ?>
-	      <div class="clfa-eventmap"><iframe src="<?php echo esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ); ?>" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="<?php esc_attr_e( 'Map of event location', 'clf-alumni' ); ?>"></iframe></div>
+	      <div class="clfa-eventmap"><iframe src="<?php echo esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ); ?>" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer" title="<?php esc_attr_e( 'Map of event location', 'clf-alumni' ); ?>"></iframe></div>
 	    <?php endif; ?>
 	  <?php endif; ?>
 	  <div class="clfa-bio"><?php echo wpautop( esc_html( wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ) ) ); // phpcs:ignore ?></div>

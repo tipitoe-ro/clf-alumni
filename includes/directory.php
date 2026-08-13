@@ -9,7 +9,7 @@ function clfa_directory_shortcode() {
 		return '';
 	}
 
-	// Single-member view: /alumni/?member=123
+	// Single-member view: /alumni-directory/?member=123
 	if ( isset( $_GET['member'] ) ) {
 		return clfa_render_single_member( (int) $_GET['member'] );
 	}

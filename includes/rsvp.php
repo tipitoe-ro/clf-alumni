@@ -218,7 +218,7 @@ function clfa_token_rsvp_page() {
 			}
 			echo '</p>';
 			if ( $address ) {
-				echo '<div class="clfa-eventmap"><iframe src="' . esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) . '" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' . esc_attr__( 'Map of event location', 'clf-alumni' ) . '"></iframe></div>';
+				echo '<div class="clfa-eventmap"><iframe src="' . esc_url( 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed' ) . '" style="width:100%;height:280px;border:0;" loading="lazy" referrerpolicy="no-referrer" title="' . esc_attr__( 'Map of event location', 'clf-alumni' ) . '"></iframe></div>';
 			}
 		}
 		echo '<div class="clfa-bio">' . wpautop( esc_html( wp_strip_all_tags( get_post_field( 'post_content', $event_id ) ) ) ) . '</div>'; // phpcs:ignore

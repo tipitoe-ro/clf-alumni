@@ -7,7 +7,7 @@ Private, members-only alumni network for the Charlotte Leadership Forum. Bold Co
 - **Members-only pages** (created automatically on activation):
   - `/alumni-login/` — themed sign-in page
   - `/alumni-home/` — member home after sign-in: greeting, CLF announcements, upcoming events with RSVP status, newest opportunities, recently joined members
-  - `/alumni/` — searchable member directory (name, class year, industry) + individual profiles
+  - `/alumni-directory/` — searchable member directory (name, class year, industry) + individual profiles
   - `/alumni-profile/` — the member's own profile editor (photo, spouse, class year, bio, work, links, contact visibility)
 - **Privacy** — everything is invisible to logged-out visitors; members choose whether email/phone are shown to other members.
 - **Admin → CLF Alumni** — member list (deactivate/reactivate, resend invites), add single member, CSV import.

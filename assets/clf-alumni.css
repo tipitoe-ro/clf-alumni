@@ -129,3 +129,9 @@
   .clfa-singlephoto{max-width:220px}
   .clfa-filters input[type=search],.clfa-filters select{flex:1 1 100%}
 }
+
+/* Who's coming (event attendee list) */
+.clfa-attendlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.clfa-attendee{display:flex;align-items:center;gap:12px}
+.clfa-attendee .clfa-photo{width:44px;height:44px;flex:none;border-radius:50%}
+.clfa-attendname{font-weight:600;font-size:14px}

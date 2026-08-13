@@ -38,6 +38,7 @@ function clfa_event_details_box( $post ) {
 	$location = get_post_meta( $post->ID, 'clfa_location', true );
 	$capacity = get_post_meta( $post->ID, 'clfa_capacity', true );
 	$deadline = get_post_meta( $post->ID, 'clfa_deadline', true );
+	$hide     = get_post_meta( $post->ID, 'clfa_hide_attendees', true );
 	?>
 	<table class="form-table">
 	  <tr><th><label><?php esc_html_e( 'Starts', 'clf-alumni' ); ?> *</label></th>
@@ -50,6 +51,8 @@ function clfa_event_details_box( $post ) {
 	    <td><input type="number" name="clfa_capacity" min="0" value="<?php echo esc_attr( $capacity ); ?>"> <span class="description"><?php esc_html_e( 'Optional — leave empty for unlimited.', 'clf-alumni' ); ?></span></td></tr>
 	  <tr><th><label><?php esc_html_e( 'RSVP deadline', 'clf-alumni' ); ?></label></th>
 	    <td><input type="datetime-local" name="clfa_deadline" value="<?php echo esc_attr( $deadline ); ?>"> <span class="description"><?php esc_html_e( 'Optional — RSVPs close at event start otherwise.', 'clf-alumni' ); ?></span></td></tr>
+	  <tr><th><label><?php esc_html_e( 'Attendee list', 'clf-alumni' ); ?></label></th>
+	    <td><label><input type="checkbox" name="clfa_hide_attendees" value="1" <?php checked( $hide ); ?>> <?php esc_html_e( 'Hide the "Who\'s coming" list from members for this event', 'clf-alumni' ); ?></label> <span class="description"><?php esc_html_e( 'Use for sensitive gatherings.', 'clf-alumni' ); ?></span></td></tr>
 	</table>
 	<p><?php esc_html_e( 'After publishing, use the "Invitations & RSVPs" box (or CLF Alumni → Events) to invite members.', 'clf-alumni' ); ?></p>
 	<?php
@@ -67,6 +70,8 @@ function clfa_save_event_meta( $post_id ) {
 			update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		}
 	}
+	// Checkbox: absent from $_POST when unchecked.
+	update_post_meta( $post_id, 'clfa_hide_attendees', empty( $_POST['clfa_hide_attendees'] ) ? '' : '1' );
 }
 add_action( 'save_post_clfa_event', 'clfa_save_event_meta' );
 
@@ -240,6 +245,40 @@ function clfa_events_shortcode() {
 }
 add_shortcode( 'clf_alumni_events', 'clfa_events_shortcode' );
 
+/* "Who's coming" list — members area only, never on the tokenized RSVP page */
+function clfa_event_attendees_html( $event_id ) {
+	if ( ! clfa_is_member() || get_post_meta( $event_id, 'clfa_hide_attendees', true ) ) {
+		return '';
+	}
+	$attendees = clfa_event_attendees( $event_id );
+	if ( empty( $attendees ) ) {
+		return '';
+	}
+	$total = 0;
+	foreach ( $attendees as $a ) {
+		$total += (int) $a->guests;
+	}
+	ob_start(); ?>
+	<div class="clfa-attendees">
+	  <div class="clfa-section"><?php echo esc_html( sprintf( __( 'Who\'s coming · %d going', 'clf-alumni' ), $total ) ); ?></div>
+	  <ul class="clfa-attendlist">
+	    <?php foreach ( $attendees as $a ) :
+			$user = get_userdata( (int) $a->user_id );
+			$name = $a->attendee_name ?: ( $user ? $user->display_name : '' );
+			if ( ! $name ) {
+				continue;
+			} ?>
+	      <li class="clfa-attendee">
+	        <?php echo clfa_member_photo( (int) $a->user_id ); // phpcs:ignore ?>
+	        <span class="clfa-attendname"><?php echo esc_html( $name ); ?><?php if ( (int) $a->guests > 1 ) : ?> <span class="clfa-muted"><?php echo esc_html( sprintf( __( '+%d', 'clf-alumni' ), (int) $a->guests - 1 ) ); ?></span><?php endif; ?></span>
+	      </li>
+	    <?php endforeach; ?>
+	  </ul>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
 /* Single event view in the members area (RSVP inline when invited) */
 function clfa_render_member_event( $event_id ) {
 	if ( 'clfa_event' !== get_post_type( $event_id ) ) {
@@ -265,6 +304,7 @@ function clfa_render_member_event( $event_id ) {
 	  } else {
 			echo '<p class="clfa-muted">' . esc_html__( 'This event is invitation-based and you are not on the invite list. Reach out to CLF if you think that\'s a mistake.', 'clf-alumni' ) . '</p>';
 	  }
+	  echo clfa_event_attendees_html( $event_id ); // phpcs:ignore
 	  ?>
 	</div>
 	<?php

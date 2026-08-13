@@ -73,6 +73,15 @@ function clfa_event_participants( $event_id, $exclude_rsvp_id = 0 ) {
 	) );
 }
 
+/* Confirmed attendees (status = 'yes') for the members-area list */
+function clfa_event_attendees( $event_id ) {
+	global $wpdb;
+	return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore
+		'SELECT user_id, attendee_name, guests FROM ' . clfa_rsvp_table() . " WHERE event_id = %d AND status = 'yes' ORDER BY responded_at ASC",
+		$event_id
+	) );
+}
+
 /* ============================================================
    RSVP form HTML (shared: token page + members area)
    ============================================================ */

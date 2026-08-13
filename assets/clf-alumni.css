@@ -6,8 +6,16 @@
 
 /* ---- Theme shell overrides on portal pages ---- */
 body.clfa-portal .clf{background:#f1ede5}
-body.clfa-portal .clf-pagehead{display:none}
-body.clfa-portal .clf-pagebody{max-width:none;padding:0;font-size:inherit;line-height:inherit;color:inherit}
+body.clfa-portal .clf-pagehead{display:none!important}
+body.clfa-portal .clf-pagebody{max-width:none!important;padding:0!important;margin:0!important;font-size:inherit;line-height:inherit;color:inherit}
+/* The theme nav is absolute + light text (made to overlay the navy band we
+   hide). On portal pages put it in flow with dark text on parchment. */
+body.clfa-portal .clf-nav{position:static;color:#172638;background:#eee9df;border-bottom:1px solid #d6cebf}
+body.clfa-portal .clf-navlinks a,body.clfa-portal .clf-navlinks button{color:#5a5f58}
+body.clfa-portal .clf-navlinks a:hover,body.clfa-portal .clf-navlinks button:hover{color:#a94d3b}
+body.clfa-portal .clf-navlinks a.active{color:#a94d3b}
+body.clfa-portal .clf-navcta,body.clfa-portal .clf-navlinks a.nav-cta{border-color:#172638!important;color:#172638}
+body.clfa-portal .clf-navlinks.open{background:#eee9df}
 
 /* ---- Base tokens ---- */
 .clfa-wrap,.clfa-subnav,.clfa-hero{--ink:#182a3d;--paper:#f1ede5;--parchment:#eee9df;--sand:#ded2be;--rust:#b95e48;--line:#cec4b4;--muted:#66706e;font-family:Manrope,sans-serif;color:var(--ink)}

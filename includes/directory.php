@@ -158,6 +158,9 @@ function clfa_render_single_member( $member_id ) {
 	echo clfa_portal_nav( 'directory' ); // phpcs:ignore ?>
 	<div class="clfa-wrap clfa-single">
 	  <a class="clfa-back" href="<?php echo esc_url( clfa_page_url( 'alumni-directory' ) ); ?>">← <?php esc_html_e( 'Back to directory', 'clf-alumni' ); ?></a>
+	  <?php if ( current_user_can( 'manage_options' ) ) : ?>
+	    <a class="clfa-link-mono" style="float:right;" href="<?php echo esc_url( add_query_arg( 'member', $member_id, clfa_page_url( 'alumni-profile' ) ) ); ?>"><?php esc_html_e( 'Edit this profile (admin)', 'clf-alumni' ); ?> ↗</a>
+	  <?php endif; ?>
 	  <div style="border-bottom:1px solid #cec4b4;padding-bottom:44px;">
 	    <p class="clfa-kicker"><?php esc_html_e( 'A fellow member', 'clf-alumni' ); ?><?php echo $city ? esc_html( ' · ' . $city ) : ''; ?></p>
 	    <h1 class="clfa-title" style="font-size:clamp(48px,6vw,84px);letter-spacing:-.08em;line-height:.88;margin:0;"><?php esc_html_e( 'Meet', 'clf-alumni' ); ?> <em><?php echo esc_html( $member->display_name ); ?>.</em></h1>

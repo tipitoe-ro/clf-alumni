@@ -13,6 +13,14 @@ function clfa_handle_profile_save() {
 	}
 	$user_id = get_current_user_id();
 
+	// Administrators may edit a member's profile on their behalf.
+	if ( current_user_can( 'manage_options' ) && ! empty( $_POST['clfa_target_user'] ) ) {
+		$target = get_userdata( (int) $_POST['clfa_target_user'] );
+		if ( $target && in_array( 'clf_alumni', (array) $target->roles, true ) ) {
+			$user_id = $target->ID;
+		}
+	}
+
 	// Names live on the WP user record
 	if ( isset( $_POST['clfa_first_name'] ) ) {
 		$first = sanitize_text_field( wp_unslash( $_POST['clfa_first_name'] ) );
@@ -56,7 +64,11 @@ function clfa_handle_profile_save() {
 	// Extra profile sections (mentorship opt-in, digest preference, …)
 	do_action( 'clfa_profile_extra_save', $user_id );
 
-	wp_safe_redirect( add_query_arg( 'saved', '1', clfa_page_url( 'alumni-profile' ) ) );
+	$redirect = add_query_arg( 'saved', '1', clfa_page_url( 'alumni-profile' ) );
+	if ( $user_id !== get_current_user_id() ) {
+		$redirect = add_query_arg( 'member', $user_id, $redirect );
+	}
+	wp_safe_redirect( $redirect );
 	exit;
 }
 add_action( 'template_redirect', 'clfa_handle_profile_save', 5 );
@@ -69,7 +81,17 @@ function clfa_profile_shortcode() {
 		return '';
 	}
 	$user_id = get_current_user_id();
-	$user    = wp_get_current_user();
+
+	// Administrators can open any member's profile for editing via ?member=ID.
+	$editing_other = false;
+	if ( current_user_can( 'manage_options' ) && isset( $_GET['member'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		$target = get_userdata( (int) $_GET['member'] ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( $target && in_array( 'clf_alumni', (array) $target->roles, true ) ) {
+			$user_id       = $target->ID;
+			$editing_other = true;
+		}
+	}
+	$user = get_userdata( $user_id );
 
 	ob_start();
 	echo clfa_portal_nav( 'profile' ); // phpcs:ignore
@@ -82,9 +104,15 @@ function clfa_profile_shortcode() {
 	  <?php if ( isset( $_GET['saved'] ) ) : ?>
 	    <p class="clfa-success"><?php esc_html_e( 'Profile saved.', 'clf-alumni' ); ?></p>
 	  <?php endif; ?>
+	  <?php if ( $editing_other ) : ?>
+	    <div class="clfa-notice-warn"><strong><?php esc_html_e( 'Admin mode', 'clf-alumni' ); ?></strong><?php echo esc_html( sprintf( __( 'You are editing the profile of %s on their behalf — not your own.', 'clf-alumni' ), $user->display_name ) ); ?></div>
+	  <?php elseif ( current_user_can( 'manage_options' ) && ! in_array( 'clf_alumni', (array) wp_get_current_user()->roles, true ) ) : ?>
+	    <div class="clfa-notice-warn"><strong><?php esc_html_e( 'Heads up', 'clf-alumni' ); ?></strong><?php esc_html_e( 'You are signed in as an administrator. This form edits the admin account\'s profile, which does not appear in the member directory or mentor roster. To edit a member\'s profile, open it from the directory and use the "Edit this profile" link.', 'clf-alumni' ); ?></div>
+	  <?php endif; ?>
 
 	  <form method="post" enctype="multipart/form-data" class="clfa-form">
 	    <?php wp_nonce_field( 'clfa_save_profile', 'clfa_profile_nonce' ); ?>
+	    <?php if ( $editing_other ) : ?><input type="hidden" name="clfa_target_user" value="<?php echo esc_attr( $user_id ); ?>"><?php endif; ?>
 
 	    <div class="clfa-section"><?php esc_html_e( 'Photo', 'clf-alumni' ); ?></div>
 	    <div class="clfa-photorow">

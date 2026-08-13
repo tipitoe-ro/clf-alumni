@@ -69,9 +69,15 @@ function clfa_events_admin_page() {
 		header( 'Content-Disposition: attachment; filename="rsvps-event-' . $event_id . '.csv"' );
 		$out = fopen( 'php://output', 'w' );
 		fputcsv( $out, array( 'Name', 'Email', 'Status', 'Spouse attending', 'Participants', 'Note', 'Invited', 'Responded' ) );
+		$safe = function ( $v ) {
+			$v = (string) $v;
+			// Neutralize spreadsheet formula injection: prefix values starting
+			// with =, +, -, @, tab, or CR with a single quote.
+			return preg_match( '/^[=+\-@\t\r]/', $v ) ? "'" . $v : $v;
+		};
 		foreach ( $rows as $r ) {
 			$u = get_userdata( $r->user_id );
-			fputcsv( $out, array( $r->attendee_name, $u ? $u->user_email : '', $r->status, $r->spouse_attending ? 'yes' : 'no', $r->guests, $r->note, $r->invited_at, $r->responded_at ) );
+			fputcsv( $out, array_map( $safe, array( $r->attendee_name, $u ? $u->user_email : '', $r->status, $r->spouse_attending ? 'yes' : 'no', $r->guests, $r->note, $r->invited_at, $r->responded_at ) ) );
 		}
 		fclose( $out ); // phpcs:ignore
 		exit;

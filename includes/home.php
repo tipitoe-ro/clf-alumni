@@ -156,7 +156,8 @@ function clfa_home_shortcode() {
 		esc_html__( 'The alumni portal', 'clf-alumni' ) . ' <span>— ' . esc_html( wp_date( 'Y' ) ) . '</span>',
 		esc_html( $greeting ) . '<br><em>' . esc_html( $first ) . '.</em>',
 		__( 'Your place to stay close to the people, ideas, and work that make the Forum worth returning to.', 'clf-alumni' ),
-		$meta
+		$meta,
+		'clfa-hero-dark'
 	); ?>
 	<div class="clfa-wrap clfa-home-wrap">
 	  <div class="clfa-home-grid">

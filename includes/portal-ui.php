@@ -48,8 +48,8 @@ function clfa_portal_nav( $active = '' ) {
 
 /* ---- Events-style editorial hero ----
    $title_html is trusted plugin-built markup (em/br), escape inputs upstream. */
-function clfa_portal_hero( $kicker, $title_html, $copy = '', $meta = array() ) {
-	$out  = '<section class="clfa-hero"><div class="clfa-hero-inner"><div>';
+function clfa_portal_hero( $kicker, $title_html, $copy = '', $meta = array(), $class = '' ) {
+	$out  = '<section class="clfa-hero' . ( $class ? ' ' . esc_attr( $class ) : '' ) . '"><div class="clfa-hero-inner"><div>';
 	$out .= '<div class="clfa-hero-kicker">' . wp_kses( $kicker, array( 'span' => array() ) ) . '</div>';
 	$out .= '<h1>' . wp_kses( $title_html, array( 'em' => array(), 'br' => array() ) ) . '</h1></div>';
 	if ( $copy || $meta ) {

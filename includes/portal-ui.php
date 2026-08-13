@@ -35,6 +35,24 @@ function clfa_portal_body_class( $classes ) {
 }
 add_filter( 'body_class', 'clfa_portal_body_class' );
 
+/* Portal pages are members-only and personalized — they must never be
+   served from a page cache (host/CDN). Without this, a member can see a
+   stale copy of the directory, mentor roster, etc. from before their
+   latest profile save. */
+function clfa_portal_nocache() {
+	if ( ! is_page() ) {
+		return;
+	}
+	$post = get_post();
+	if ( $post && false !== strpos( $post->post_content, '[clf_alumni_' ) ) {
+		nocache_headers();
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+	}
+}
+add_action( 'template_redirect', 'clfa_portal_nocache', 1 );
+
 /* ---- Members-only subnav band ---- */
 function clfa_portal_nav( $active = '' ) {
 	$out = '<div class="clfa-subnav"><span class="clfa-subnav-label">' . esc_html__( 'Members only', 'clf-alumni' ) . '</span><nav class="clfa-subnav-nav" aria-label="' . esc_attr__( 'Members navigation', 'clf-alumni' ) . '">';

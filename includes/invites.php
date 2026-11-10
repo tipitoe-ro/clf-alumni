@@ -191,7 +191,10 @@ $user_ids = get_users( array( 'fields' => 'ID', 'meta_query' => clfa_leader_quer
 	echo '</select></p>';
 echo '<p><label><input type="radio" name="invite_mode" value="leaders"> ' . esc_html__( 'Class leaders', 'clf-alumni' ) . '</label> — <label>' . esc_html__( 'Class led (blank = all classes):', 'clf-alumni' ) . ' <input name="leader_year" type="text" pattern="[0-9]{4}" placeholder="2026"></label></p>';
 echo '<p><label><input type="radio" name="invite_mode" value="picked"> ' . esc_html__( 'Hand-picked members:', 'clf-alumni' ) . '</label></p>';
-	echo '<div style="max-height:180px;overflow:auto;border:1px solid #ddd;padding:8px;margin:4px 0 12px;">';
+wp_enqueue_script( 'clfa-member-picker', CLFA_URL . 'assets/member-picker.js', array(), CLFA_VERSION, true );
+echo '<p><label for="clfa-member-search">' . esc_html__( 'Search members by name or email', 'clf-alumni' ) . '</label><br><input type="search" id="clfa-member-search" class="regular-text" autocomplete="off" aria-controls="clfa-member-options" placeholder="' . esc_attr__( 'Start typing a name or email…', 'clf-alumni' ) . '"></p>';
+echo '<p class="description" aria-live="polite"><span id="clfa-member-selected">0</span> ' . esc_html__( 'selected. Selections are kept when you search.', 'clf-alumni' ) . '</p>';
+echo '<div id="clfa-member-options" style="max-height:180px;overflow:auto;border:1px solid #ddd;padding:8px;margin:4px 0 12px;">';
 	foreach ( get_users( array( 'role' => 'clf_alumni', 'orderby' => 'display_name', 'number' => 2000 ) ) as $u ) {
 		if ( get_user_meta( $u->ID, 'clfa_disabled', true ) ) {
 			continue;
@@ -199,6 +202,7 @@ echo '<p><label><input type="radio" name="invite_mode" value="picked"> ' . esc_h
 		echo '<label style="display:block;"><input type="checkbox" name="members[]" value="' . (int) $u->ID . '"> ' . esc_html( $u->display_name . ' (' . $u->user_email . ')' ) . '</label>';
 	}
 	echo '</div>';
+echo '<p id="clfa-member-empty" role="status" hidden>' . esc_html__( 'No members match your search.', 'clf-alumni' ) . '</p>';
 	echo '<p><button class="button button-primary">' . esc_html__( 'Send invitations', 'clf-alumni' ) . '</button> ';
 	echo '<button class="button" name="invite_mode" value="remind" onclick="return confirm(\'' . esc_js( __( 'Send a reminder email to everyone who has not replied?', 'clf-alumni' ) ) . '\')">' . esc_html__( 'Remind non-responders now', 'clf-alumni' ) . '</button></p>';
 	echo '<p class="description">' . esc_html__( 'Members already invited to this event are never emailed twice by "Send invitations" — use the reminder button for follow-ups. An automatic reminder also goes out 3 days before the RSVP deadline.', 'clf-alumni' ) . '</p>';

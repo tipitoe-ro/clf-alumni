@@ -86,6 +86,26 @@ function clfa_mc_missing( $result ) {
 	return is_wp_error( $result ) && 'mailchimp_404' === $result->get_error_code();
 }
 
+// Mailchimp audience webhooks have no signed payload. Use a separate, revocable
+// URL secret AND verify the current contact state using the server-side API key.
+function clfa_mc_webhook_token() {
+$token = get_option( 'clfa_mc_webhook_token', '' );
+if ( ! $token ) {
+add_option( 'clfa_mc_webhook_token', bin2hex( random_bytes( 32 ) ), '', false );
+$token = get_option( 'clfa_mc_webhook_token', '' );
+}
+return $token;
+}
+
+function clfa_mc_webhook_permission( $request ) {
+$query = $request->get_query_params();
+$token = get_option( 'clfa_mc_webhook_token', '' );
+if ( ! is_string( $token ) || ! $token || ! isset( $query['key'] ) || ! is_string( $query['key'] ) || ! hash_equals( $token, $query['key'] ) ) {
+return new WP_Error( 'forbidden', 'Invalid webhook credential.', array( 'status' => 403 ) );
+}
+return true;
+}
+
 /* Pure payload builder: NEVER include "status" in an upsert. Existing
  * unsubscribed/cleaned/pending contacts must keep their Mailchimp status.
  */

@@ -3,7 +3,7 @@
  * Plugin Name:       CLF Alumni Network
  * Plugin URI:        https://app.global
  * Description:       Private alumni network for the Charlotte Leadership Forum — member profiles, searchable directory, and admin member management. Bold Conviction design.
- * Version:           1.6.0
+ * Version:           1.6.1
  * Author:            Always About People
  * License:           GPL-2.0-or-later
  * Text Domain:       clf-alumni
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CLFA_VERSION', '1.6.0' );
+define( 'CLFA_VERSION', '1.6.1' );
 define( 'CLFA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CLFA_URL', plugin_dir_url( __FILE__ ) );
 
@@ -21,6 +21,7 @@ require_once CLFA_DIR . 'includes/helpers.php';
 require_once CLFA_DIR . 'includes/leaders.php';
 require_once CLFA_DIR . 'includes/mailchimp-api.php';
 require_once CLFA_DIR . 'includes/mailchimp-sync.php';
+require_once CLFA_DIR . 'includes/mailchimp-webhook.php';
 require_once CLFA_DIR . 'includes/mailchimp-admin.php';
 register_deactivation_hook( __FILE__, function () {
 	wp_clear_scheduled_hook( 'clfa_mc_tick' );

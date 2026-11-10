@@ -42,7 +42,10 @@ function clfa_mc_admin_page() {
 				), false );
 				$notice = 'Settings saved. No existing users were enrolled.';
 			}
-		} elseif ( 'test' === $action ) {
+} elseif ( 'rotate_webhook' === $action ) {
+update_option( 'clfa_mc_webhook_token', bin2hex( random_bytes( 32 ) ), false );
+$notice = 'Webhook URL rotated. Replace the callback URL in Mailchimp now; the old URL no longer works.';
+} elseif ( 'test' === $action ) {
 			$s = clfa_mc_settings();
 			$result = $s['audience'] ? clfa_mc_request( 'GET', 'lists/' . rawurlencode( $s['audience'] ) ) : new WP_Error( 'audience', 'Save an audience ID first.' );
 			if ( is_wp_error( $result ) ) {
@@ -127,8 +130,36 @@ function clfa_mc_admin_page() {
 		<p><button class="button button-primary">Save settings</button></p>
 	</form>
 	<form method="post"><?php wp_nonce_field( 'clfa_mc_admin', 'clfa_mc_nonce' ); ?><button class="button" name="mc_action" value="test">Test saved connection</button></form>
+<hr><h2>Immediate subscription updates</h2>
+<p>In Mailchimp, add an audience webhook for subscribes, unsubscribes and cleaned addresses, from subscribers, administrators and the API. Copy this private callback URL. Use HTTPS and do not share it or include it in logs.</p>
+<p><label for="mc-webhook">Webhook callback URL</label><br>
+<input id="mc-webhook" class="large-text" readonly value="<?php echo esc_attr( add_query_arg( 'key', clfa_mc_webhook_token(), rest_url( 'clf-alumni/v1/mailchimp' ) ) ); ?>"></p>
+<p>Updates are verified against Mailchimp before changing profiles. Confirmations never override a website opt-out. See MAILCHIMP.md for setup and verification.</p>
+<form method="post"><?php wp_nonce_field( 'clfa_mc_admin', 'clfa_mc_nonce' ); ?><button class="button" name="mc_action" value="rotate_webhook" onclick="return confirm('Invalidate the old webhook URL? You must update Mailchimp with the new URL immediately.')">Rotate webhook URL</button></form>
+<h3>Webhook health</h3>
+<?php
+$last_accepted = (int) get_option( 'clfa_mc_webhook_last_accepted', 0 );
+$verification = get_option( 'clfa_mc_webhook_verification', array() );
+$failures = max( 0, (int) ( $verification['failures'] ?? 0 ) );
+$last_failure = (int) ( $verification['last_failure'] ?? 0 );
+?>
+<table class="widefat striped">
+<tbody>
+<tr><th scope="row">Last accepted delivery (UTC)</th><td><?php echo esc_html( $last_accepted ? gmdate( 'Y-m-d H:i:s', $last_accepted ) : 'None recorded yet' ); ?></td></tr>
+<tr><th scope="row">Mailchimp API verification failures</th><td><?php echo esc_html( $failures ); ?> total since health tracking began</td></tr>
+<tr><th scope="row">Last verification failure (UTC)</th><td><?php echo esc_html( $last_failure ? gmdate( 'Y-m-d H:i:s', $last_failure ) : 'None recorded yet' ); ?></td></tr>
+</tbody>
+</table>
+<?php if ( ! clfa_mc_ready() ) : ?>
+<p><strong>Updates are paused or unconfigured.</strong> Enable the integration with a saved API key and audience to receive subscription updates.</p>
+<?php endif; ?>
+<?php if ( $failures ) : ?>
+<p><strong>Verification failures have occurred.</strong> Check the last failure time and use <strong>Test saved connection</strong>. A later accepted delivery does not prove all failed contacts recovered; check affected contacts and use <strong>Sync selected / retry</strong> after fixing the connection.</p>
+<?php endif; ?>
+<p class="description">Accepted means a valid POST returned success, including safely ignored events; it does not necessarily mean a profile changed. GET URL checks and rejected or retryable requests do not count. No recent delivery may simply mean no subscription changes. Tracking starts with this update and keeps its history when settings or the callback URL change.</p>
+<p class="description">The failure total counts failed contact lookups through the Mailchimp API, including retries, not unique contacts. It excludes rejected callback keys, malformed requests, paused syncing and busy locks. Only timestamps and an aggregate count are stored for health tracking, never callback keys, emails or payloads. If expected updates are missing, check Mailchimp webhook settings and hosting/firewall access; see MAILCHIMP.md for troubleshooting.</p>
 	<hr><h2>Contacts and sync results</h2>
-	<p>Member consent is stored separately from Mailchimp's subscription status. A Mailchimp unsubscribe is respected on the next sync. Use Mailchimp's signup form to opt back in after unsubscribing.</p>
+<p>Member consent is stored separately from Mailchimp's subscription status. A configured webhook reflects Mailchimp unsubscribes on the next profile load after delivery; routine sync also respects them. Remote confirmations do not override a website opt-out. Use Mailchimp's signup form and explicitly opt in on the website to restore both preferences.</p>
 	<form method="get">
 		<input type="hidden" name="page" value="clfa-mailchimp">
 		<label>Name or email <input name="mc_search" value="<?php echo esc_attr( $search ); ?>"></label>

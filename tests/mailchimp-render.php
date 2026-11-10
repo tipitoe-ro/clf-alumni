@@ -4,7 +4,7 @@ if ( PHP_SAPI !== 'cli' ) { exit; }
 ob_start();
 require __DIR__ . '/mailchimp-test.php';
 ob_end_clean();
-function current_user_can( ...$args ) { return true; }
+function current_user_can( ...$args ) { return $GLOBALS['test_admin_access'] ?? true; }
 function sanitize_text_field_render( $v ) { return $v; }
 function wp_unslash( $v ) { return $v; }
 function absint( $v ) { return abs( (int) $v ); }
@@ -15,6 +15,7 @@ function wp_nonce_field( ...$args ) {}
 function checked( $v, $expected = true ) { if ( $v == $expected ) { echo ' checked'; } }
 function disabled( $v ) { if ( $v ) { echo ' disabled'; } }
 function add_query_arg( ...$args ) { return '#'; }
+function rest_url( $path ) { return 'https://wordpress.example.test/wp-json/' . $path; }
 class WP_User_Query {
 	function __construct( $args ) {}
 	function get_results() { return array(); }

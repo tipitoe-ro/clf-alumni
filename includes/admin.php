@@ -45,6 +45,7 @@ function clfa_create_member( $email, $first, $last, $spouse = '', $class_year = 
 	if ( $send_invite ) {
 		clfa_send_invite( $user_id );
 	}
+do_action( 'clfa_member_created', $user_id );
 	return $user_id;
 }
 

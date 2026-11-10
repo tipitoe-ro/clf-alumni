@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'clf-alumni', 'Mailchimp', 'Mailchimp', 'manage_options', 'clfa-mailchimp', 'clfa_mc_admin_page' );
-} );
+}, 21 ); // After the parent menu (10) and Email Settings (20): correct route and menu order.
 
 function clfa_mc_admin_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {

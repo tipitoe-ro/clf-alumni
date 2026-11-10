@@ -34,6 +34,7 @@ done
 mariadb --no-defaults --socket="$WORK/mysql.sock" -u root \
   -e 'CREATE DATABASE clfa_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
 php "$ROOT/wordpress-integration/install.php"
+php "$ROOT/wordpress-integration/admin-menu.php"
 php "$ROOT/mailchimp-admin-integration-test.php"
 php "$ROOT/mailchimp-admin-integration-test.php" --constant-key
 php "$ROOT/wordpress-integration/profile-sync.php"

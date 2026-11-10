@@ -111,7 +111,7 @@ function clfa_handle_opportunity_submit() {
 	if ( clfa_moderation_enabled() ) {
 		wp_mail(
 			get_option( 'admin_email' ),
-			__( '[CLF Alumni] Opportunity awaiting review', 'clf-alumni' ),
+__( '[CLF] Opportunity awaiting review', 'clf-alumni' ),
 			sprintf( __( "\"%1\$s\" was submitted to the opportunities board and is pending review:\n%2\$s", 'clf-alumni' ), $title, admin_url( 'post.php?post=' . $post_id . '&action=edit' ) )
 		);
 	}
@@ -337,7 +337,7 @@ function clfa_send_weekly_digest() {
 	}
 	$body =
 		'<h1 style="font-size:26px;margin:0 0 8px;font-weight:600;color:#eee9df;">' . esc_html__( 'This week on the board', 'clf-alumni' ) . '</h1>' .
-		'<p style="line-height:1.7;color:#c6c8c3;margin:0 0 24px;">' . esc_html( sprintf( _n( '%d new opportunity from your fellow alumni.', '%d new opportunities from your fellow alumni.', count( $posts ), 'clf-alumni' ), count( $posts ) ) ) . '</p>' .
+'<p style="line-height:1.7;color:#c6c8c3;margin:0 0 24px;">' . esc_html( sprintf( _n( '%d new opportunity from the CLF community.', '%d new opportunities from the CLF community.', count( $posts ), 'clf-alumni' ), count( $posts ) ) ) . '</p>' .
 		$items;
 
 	$members = get_users( array( 'role' => 'clf_alumni', 'number' => 2000, 'fields' => 'ID', 'meta_key' => 'clfa_weekly_digest', 'meta_value' => 1 ) );
@@ -351,7 +351,7 @@ function clfa_send_weekly_digest() {
 		}
 		clfa_send_branded(
 			$user->user_email,
-			__( 'CLF Alumni — new opportunities this week', 'clf-alumni' ),
+__( 'CLF — new opportunities this week', 'clf-alumni' ),
 			$body,
 			__( 'Open the board', 'clf-alumni' ),
 			clfa_page_url( 'alumni-board' ),

@@ -8,10 +8,13 @@ defined( 'ABSPATH' ) || exit;
    alumni emails and offer a test send.
    ============================================================ */
 function clfa_email_settings() {
-	return wp_parse_args( get_option( 'clfa_email', array() ), array(
+$settings = wp_parse_args( get_option( 'clfa_email', array() ), array(
 		'from_email' => '',
 		'from_name'  => 'Charlotte Leadership Forum',
 	) );
+// Also normalize sender names saved before inclusive email branding.
+$settings['from_name'] = trim( preg_replace( '/\balumni\b/i', '', $settings['from_name'] ), " \t\n\r\0\x0B-–—" );
+return $settings;
 }
 
 function clfa_email_settings_menu() {
@@ -33,7 +36,7 @@ function clfa_email_settings_page() {
 		$notice = __( 'Email settings saved.', 'clf-alumni' );
 		if ( isset( $_POST['send_test'] ) && $_POST['send_test'] ) {
 			$to = wp_get_current_user()->user_email;
-			$ok = clfa_send_branded( $to, __( 'CLF test email', 'clf-alumni' ), '<p>' . esc_html__( 'This is a test email from the CLF Alumni plugin. If you can read this, delivery works.', 'clf-alumni' ) . '</p>' );
+$ok = clfa_send_branded( $to, __( 'CLF test email', 'clf-alumni' ), '<p>' . esc_html__( 'This is a test email from CLF. If you can read this, delivery works.', 'clf-alumni' ) . '</p>' );
 			$notice .= ' ' . ( $ok ? sprintf( __( 'Test email sent to %s.', 'clf-alumni' ), $to ) : __( 'Test email FAILED — check your Gravity SMTP configuration.', 'clf-alumni' ) );
 		}
 	}
@@ -68,11 +71,11 @@ function clfa_send_branded( $to, $subject, $body_html, $cta_label = '', $cta_url
 		'<div style="background:#eee9df;padding:40px 16px;font-family:Georgia,\'Times New Roman\',serif;color:#172638;">' .
 		'<div style="max-width:600px;margin:0 auto;">' .
 		'<div style="background:#172638;color:#eee9df;padding:44px 40px;">' .
-		'<p style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#d4a492;margin:0 0 22px;">Charlotte Leadership Forum — Alumni</p>' .
+'<p style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#d4a492;margin:0 0 22px;">Charlotte Leadership Forum</p>' .
 		$body_html .
 		$cta .
 		'</div>' .
-		'<p style="font-size:11px;color:#8a877e;text-align:center;margin-top:18px;">' . ( $footer_extra ? $footer_extra . '<br>' : '' ) . esc_html( 'Charlotte Leadership Forum · You\'re receiving this as a member of the CLF Alumni Network.' ) . '</p>' .
+'<p style="font-size:11px;color:#8a877e;text-align:center;margin-top:18px;">' . ( $footer_extra ? $footer_extra . '<br>' : '' ) . esc_html( 'Charlotte Leadership Forum · You\'re receiving this as part of the CLF community.' ) . '</p>' .
 		'</div></div>';
 
 	$headers = array( 'Content-Type: text/html; charset=UTF-8' );

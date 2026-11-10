@@ -75,6 +75,12 @@ function clfa_admin_members_page() {
 
 	$search  = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 	$args    = array( 'role' => 'clf_alumni', 'number' => 1000, 'orderby' => 'display_name' );
+$leaders_only = ! empty( $_GET['leaders'] );
+$leader_year = isset( $_GET['leader_year'] ) ? sanitize_text_field( wp_unslash( $_GET['leader_year'] ) ) : '';
+if ( $leaders_only || $leader_year ) {
+	unset( $args['role'] ); // Include leader-only contacts without granting portal access.
+	$args['meta_query'] = clfa_leader_query( $leader_year );
+}
 	if ( $search ) {
 		$args['search']         = '*' . $search . '*';
 		$args['search_columns'] = array( 'display_name', 'user_email' );
@@ -89,6 +95,8 @@ function clfa_admin_members_page() {
 	  <?php if ( $notice ) : ?><div class="notice notice-success"><p><?php echo esc_html( $notice ); ?></p></div><?php endif; ?>
 
 	  <form method="get"><input type="hidden" name="page" value="clf-alumni">
+    <p><label><input type="checkbox" name="leaders" value="1" <?php checked( $leaders_only ); ?>> <?php esc_html_e( 'Class leaders only', 'clf-alumni' ); ?></label>
+    <label><?php esc_html_e( 'Class led', 'clf-alumni' ); ?> <input type="text" name="leader_year" pattern="[0-9]{4}" placeholder="Any year" value="<?php echo esc_attr( $leader_year ); ?>"></label></p>
 	    <p class="search-box"><input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search members…', 'clf-alumni' ); ?>">
 	    <button class="button"><?php esc_html_e( 'Search', 'clf-alumni' ); ?></button></p>
 	  </form>
@@ -109,8 +117,12 @@ function clfa_admin_members_page() {
 			$disabled = get_user_meta( $m->ID, 'clfa_disabled', true );
 			$base     = admin_url( 'admin.php?page=clf-alumni&user=' . $m->ID ); ?>
 	      <tr>
-	        <td><strong><?php echo esc_html( $m->display_name ); ?></strong></td>
-	        <td><?php echo esc_html( $m->user_email ); ?></td>
+        <td><strong><?php echo esc_html( $m->display_name ); ?></strong>
+          <?php $led = clfa_leader_years( $m->ID ); if ( $led ) : ?>
+            <br><span style="color:#a94d3b;"><?php echo esc_html( 'Class leader · ' . implode( ', ', $led ) ); ?></span>
+          <?php endif; ?>
+        </td>
+        <td><a href="<?php echo esc_url( 'mailto:' . $m->user_email ); ?>"><?php echo esc_html( $m->user_email ); ?></a></td>
 	        <td><?php echo esc_html( get_user_meta( $m->ID, 'clfa_class_year', true ) ); ?></td>
 	        <td><?php echo $disabled ? '<span style="color:#a94d3b;">' . esc_html__( 'Inactive', 'clf-alumni' ) . '</span>' : esc_html__( 'Active', 'clf-alumni' ); ?></td>
 	        <td>

@@ -177,15 +177,15 @@ function clfa_send_invite( $user_id ) {
 	$url  = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
 	$name = $user->first_name ?: $user->display_name;
 
-	$subject = __( 'Welcome to the CLF Alumni Network', 'clf-alumni' );
+$subject = __( 'Welcome to the CLF Network', 'clf-alumni' );
 	$body    =
 		'<div style="background:#eee9df;padding:40px 20px;font-family:Georgia,serif;color:#172638;">' .
 		'<div style="max-width:560px;margin:0 auto;background:#172638;color:#eee9df;padding:40px;">' .
 		'<p style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#d4a492;margin:0 0 20px;">Charlotte Leadership Forum</p>' .
 		'<h1 style="font-size:30px;margin:0 0 18px;font-weight:600;">' . esc_html( sprintf( __( 'Welcome, %s.', 'clf-alumni' ), $name ) ) . '</h1>' .
-		'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html__( 'You now have access to the CLF Alumni Network — a private space for CLF alumni to reconnect, network, and stay involved. Set your password to get started, then complete your profile so classmates old and new can find you.', 'clf-alumni' ) . '</p>' .
+'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html__( 'Welcome to the CLF community. Set your password to get started. Your account access is managed by CLF.', 'clf-alumni' ) . '</p>' .
 		'<p style="margin:28px 0;"><a href="' . esc_url( $url ) . '" style="background:#a94d3b;color:#ffffff;padding:14px 22px;text-decoration:none;font-size:13px;letter-spacing:.08em;text-transform:uppercase;">' . esc_html__( 'Set your password', 'clf-alumni' ) . '</a></p>' .
-		'<p style="font-size:12px;color:#8a929b;">' . esc_html__( 'After setting your password, sign in and visit your profile from the Alumni Network page.', 'clf-alumni' ) . '</p>' .
+'<p style="font-size:12px;color:#8a929b;">' . esc_html__( 'If you need help accessing your account, please contact CLF.', 'clf-alumni' ) . '</p>' .
 		'</div></div>';
 
 	$headers = array( 'Content-Type: text/html; charset=UTF-8' );

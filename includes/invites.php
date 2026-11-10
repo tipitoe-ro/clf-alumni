@@ -28,7 +28,7 @@ function clfa_send_invitation( $rsvp, $is_reminder = false ) {
 		: get_the_title( $event_id );
 	$intro = $is_reminder
 		? sprintf( __( 'Hi %s — we haven\'t heard from you yet, and we\'d love to know if you\'re coming.', 'clf-alumni' ), $name )
-		: sprintf( __( 'Hi %s — you\'re invited to a CLF alumni gathering.', 'clf-alumni' ), $name );
+: sprintf( __( 'Hi %s — you\'re invited to a CLF gathering.', 'clf-alumni' ), $name );
 
 	$body =
 		'<h1 style="font-size:28px;margin:0 0 16px;font-weight:600;color:#eee9df;">' . esc_html( $heading ) . '</h1>' .
@@ -103,7 +103,10 @@ function clfa_events_admin_page() {
 				$user_ids = get_users( array( 'role' => 'clf_alumni', 'fields' => 'ID', 'number' => 2000 ) );
 			} elseif ( 'class' === $mode && ! empty( $_POST['class_year'] ) ) {
 				$user_ids = get_users( array( 'role' => 'clf_alumni', 'fields' => 'ID', 'number' => 2000, 'meta_key' => 'clfa_class_year', 'meta_value' => sanitize_text_field( wp_unslash( $_POST['class_year'] ) ) ) );
-			} elseif ( 'picked' === $mode && ! empty( $_POST['members'] ) ) {
+} elseif ( 'leaders' === $mode ) {
+$leader_year = sanitize_text_field( wp_unslash( $_POST['leader_year'] ?? '' ) );
+$user_ids = get_users( array( 'fields' => 'ID', 'meta_query' => clfa_leader_query( $leader_year ) ) );
+} elseif ( 'picked' === $mode && ! empty( $_POST['members'] ) ) {
 				$user_ids = array_map( 'intval', (array) $_POST['members'] );
 			}
 			foreach ( $user_ids as $uid ) {
@@ -186,7 +189,8 @@ function clfa_events_admin_page() {
 		echo '<option value="' . esc_attr( $y ) . '">' . esc_html( $y ) . '</option>';
 	}
 	echo '</select></p>';
-	echo '<p><label><input type="radio" name="invite_mode" value="picked"> ' . esc_html__( 'Hand-picked members:', 'clf-alumni' ) . '</label></p>';
+echo '<p><label><input type="radio" name="invite_mode" value="leaders"> ' . esc_html__( 'Class leaders', 'clf-alumni' ) . '</label> — <label>' . esc_html__( 'Class led (blank = all classes):', 'clf-alumni' ) . ' <input name="leader_year" type="text" pattern="[0-9]{4}" placeholder="2026"></label></p>';
+echo '<p><label><input type="radio" name="invite_mode" value="picked"> ' . esc_html__( 'Hand-picked members:', 'clf-alumni' ) . '</label></p>';
 	echo '<div style="max-height:180px;overflow:auto;border:1px solid #ddd;padding:8px;margin:4px 0 12px;">';
 	foreach ( get_users( array( 'role' => 'clf_alumni', 'orderby' => 'display_name', 'number' => 2000 ) ) as $u ) {
 		if ( get_user_meta( $u->ID, 'clfa_disabled', true ) ) {

@@ -89,7 +89,7 @@ function clfa_handle_mentor_interest() {
 
 	$body =
 		'<h1 style="font-size:26px;margin:0 0 16px;font-weight:600;color:#eee9df;">' . esc_html( sprintf( __( '%s would like your mentorship', 'clf-alumni' ), $me->display_name ) ) . '</h1>' .
-		'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html( sprintf( __( 'Hi %s — a fellow CLF alum saw your mentor profile and raised their hand.', 'clf-alumni' ), $mentor->first_name ?: $mentor->display_name ) ) . '</p>' .
+		'<p style="line-height:1.7;color:#c6c8c3;">' . esc_html( sprintf( __( 'Hi %s — a fellow CLF member saw your mentor profile and raised their hand.', 'clf-alumni' ), $mentor->first_name ?: $mentor->display_name ) ) . '</p>' .
 		'<table style="margin:22px 0;color:#eee9df;font-size:14px;line-height:2;">' .
 		'<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'Who', 'clf-alumni' ) . '</td><td>' . esc_html( $me->display_name . ( $class ? ' (Class of ' . $class . ')' : '' ) ) . '</td></tr>' .
 		( $prof ? '<tr><td style="color:#d4a492;padding-right:16px;">' . esc_html__( 'Work', 'clf-alumni' ) . '</td><td>' . esc_html( $prof ) . '</td></tr>' : '' ) .
